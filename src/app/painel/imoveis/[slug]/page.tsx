@@ -1,15 +1,11 @@
-export const dynamic = "force-dynamic";
+"use client";
 
+import { useParams } from "next/navigation";
 import { listaImoveis } from "../data";
 
-type PageProps = {
-  params: {
-    slug: string;
-  };
-};
-
-export default function Page({ params }: PageProps) {
-  const slug = params.slug;
+export default function ImovelDetalhes() {
+  const params = useParams();
+  const slug = params?.slug as string;
 
   console.log("SLUG RECEBIDO:", slug);
 
