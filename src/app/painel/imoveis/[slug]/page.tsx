@@ -67,7 +67,10 @@ export default function ImovelDetalhes() {
 
       {/* DADOS FINANCEIROS */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <InfoCard title="Total de Tokens" value={imovel.tokenTotal} />
+        <InfoCard
+  title="Participação na Pool"
+  value={`${percentualPool.toFixed(2)}% do total`}
+ />
         <InfoCard
           title="Valor Pago"
           value={`R$ ${imovel.valorPago.toLocaleString("pt-BR")}`}
@@ -106,13 +109,6 @@ export default function ImovelDetalhes() {
             </a>
           ))}
         </div>
-      </div>
-
-      {/* CTA */}
-      <div className="pt-6">
-        <button className="px-8 py-4 rounded-xl bg-bc-brown text-white text-lg hover:opacity-90 transition">
-          Indicar este imóvel
-        </button>
       </div>
 
     </div>
