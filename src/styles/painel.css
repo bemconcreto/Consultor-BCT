@@ -1,0 +1,242 @@
+/* =============================
+   GLOBAL painel LAYOUT
+============================= */
+.painel-container {
+  display: flex;
+  height: 100vh;
+  background: #f5f7fa;
+  font-family: system-ui, sans-serif;
+}
+
+/* =============================
+   SIDEBAR DESKTOP
+============================= */
+.sidebar {
+  width: 240px;
+  background: #101820;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  padding: 24px 16px;
+  transition: transform 0.3s ease;
+}
+
+.logo {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 32px;
+}
+
+.menu a {
+  display: block;
+  padding: 12px;
+  border-radius: 6px;
+  margin-bottom: 8px;
+  font-size: 15px;
+  text-decoration: none;
+  color: #d6d6d6;
+  transition: 0.2s;
+}
+
+.menu a:hover {
+  background: #1f2c38;
+  color: white;
+}
+
+.sidebar-footer {
+  margin-top: auto;
+  opacity: 0.5;
+  font-size: 12px;
+}
+
+/* =============================
+   MAIN CONTENT
+============================= */
+.content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.topbar {
+  height: 60px;
+  background: white;
+  border-bottom: 1px solid #ddd;
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  font-weight: 600;
+  font-size: 18px;
+  justify-content: space-between;
+}
+
+/* BOTÃO MOBILE PARA ABRIR MENU */
+.mobile-menu-btn {
+  display: none;
+  background: none;
+  border: none;
+  font-size: 26px;
+  cursor: pointer;
+}
+
+.page-content {
+  padding: 24px;
+  overflow-y: auto;
+}
+
+/* =============================
+   CARDS GRID
+============================= */
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 20px;
+}
+
+.card {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0px 3px 10px rgba(0, 0, 0, 0.07);
+}
+
+.card h3 {
+  font-size: 16px;
+  margin-bottom: 6px;
+  font-weight: 600;
+}
+
+.card .value {
+  font-size: 28px;
+  font-weight: 700;
+  margin-top: 10px;
+}
+
+/* =============================
+   RESPONSIVE (TABLET & MOBILE)
+============================= */
+
+/* Até 1024px — tablets */
+@media (max-width: 1024px) {
+  .sidebar {
+    width: 200px;
+  }
+}
+
+/* Até 768px — celulares grandes, iPhone */
+@media (max-width: 768px) {
+  .painel-container {
+    flex-direction: column;
+  }
+
+  /* Esconde sidebar inicialmente */
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    transform: translateX(-100%);
+    z-index: 999;
+  }
+
+  /* Sidebar aberta */
+  .sidebar.open {
+    transform: translateX(0);
+  }
+
+  /* Topo vira barra fixa */
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 900;
+  }
+
+  /* Mostra botão hamburguer */
+  .mobile-menu-btn {
+    display: block;
+  }
+
+  /* Cards ocupam 100% da largura */
+  .cards-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .page-content {
+    padding: 16px;
+  }
+}
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin: 20px 0;
+}
+
+.kpi-card {
+  padding: 16px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+}
+
+.filters {
+  margin-bottom: 20px;
+}
+
+.chart-box {
+  background: white;
+  padding: 16px;
+  border-radius: 8px;
+  margin: 20px 0;
+}
+
+.chart-bar-container {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  height: 150px;
+}
+
+.chart-bar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.chart-bar-fill {
+  width: 20px;
+  background: #003c8f;
+  border-radius: 4px 4px 0 0;
+}
+
+.chart-bar-label {
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+.table-box {
+  margin-top: 20px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+}
+
+th, td {
+  padding: 12px;
+  border-bottom: 1px solid #eee;
+}
+
+.pagination {
+  margin-top: 12px;
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+}
+
+.pagination button {
+  padding: 6px 12px;
+  border-radius: 6px;
+}
