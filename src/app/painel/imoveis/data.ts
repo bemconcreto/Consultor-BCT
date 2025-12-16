@@ -39,7 +39,7 @@ export const listaImoveis: Imovel[] = [
   },
   {
     id: 2,
-    slug: "the-one-saude-10-unidades",
+    slug: "the-one-saude",
     nome: "The One Saúde — 10 Unidades",
     cidade: "São Paulo - SP",
     status: "Em breve",
