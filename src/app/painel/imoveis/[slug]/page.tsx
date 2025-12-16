@@ -18,6 +18,15 @@ export default function ImovelDetalhes() {
     );
   }
 
+  // 🔢 Pool total (soma do valor de mercado de todos os imóveis)
+  const poolTotal = listaImoveis.reduce(
+    (total, im) => total + im.valorMercadoHoje,
+    0
+  );
+
+  const percentualPool =
+    (imovel.valorMercadoHoje / poolTotal) * 100;
+
   const valorizacao =
     ((imovel.valorMercadoHoje - imovel.valorPago) / imovel.valorPago) * 100;
 
@@ -56,7 +65,7 @@ export default function ImovelDetalhes() {
             <Image
               key={i}
               src={img}
-              alt={`${imovel.nome} ${i}`}
+              alt={`${imovel.nome} ${i + 1}`}
               width={400}
               height={300}
               className="rounded-lg object-cover"
@@ -68,9 +77,9 @@ export default function ImovelDetalhes() {
       {/* DADOS FINANCEIROS */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <InfoCard
-  title="Participação na Pool"
-  value={`${percentualPool.toFixed(2)}% do total`}
- />
+          title="Participação na Pool"
+          value={`${percentualPool.toFixed(2)}% do total`}
+        />
         <InfoCard
           title="Valor Pago"
           value={`R$ ${imovel.valorPago.toLocaleString("pt-BR")}`}
@@ -103,6 +112,7 @@ export default function ImovelDetalhes() {
               key={i}
               href={doc.arquivo}
               target="_blank"
+              rel="noopener noreferrer"
               className="px-5 py-3 rounded-lg bg-white/10 hover:bg-white/20 transition"
             >
               📄 {doc.nome}
