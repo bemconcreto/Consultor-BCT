@@ -1,5 +1,6 @@
 export type Imovel = {
   id: number;
+  slug: string;
   nome: string;
   cidade: string;
   status: string;
@@ -16,6 +17,7 @@ export type Imovel = {
 export const listaImoveis: Imovel[] = [
   {
     id: 1,
+    slug: "vitta-premium-mogi",
     nome: "Vitta Premium Mogi",
     cidade: "Mogi das Cruzes - SP",
     status: "Tokenizando",
@@ -37,6 +39,7 @@ export const listaImoveis: Imovel[] = [
   },
   {
     id: 2,
+    slug: "the-one-saude-10-unidades",
     nome: "The One Saúde — 10 Unidades",
     cidade: "São Paulo - SP",
     status: "Em breve",
@@ -58,6 +61,6 @@ export const listaImoveis: Imovel[] = [
   },
 ];
 
-export function getImovelById(id: number) {
-  return listaImoveis.find((i) => i.id === id) ?? null;
+export function getImovelBySlug(slug: string) {
+  return listaImoveis.find((i) => i.slug === slug) ?? null;
 }

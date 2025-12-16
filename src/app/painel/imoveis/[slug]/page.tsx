@@ -1,8 +1,11 @@
-import { getImovelById } from "../data";
+import { getImovelBySlug } from "../data";
 
-export default function ImovelDetalhes({ params }: { params: { id: string } }) {
-  const id = Number(params.id);
-  const imovel = getImovelById(id);
+export default function ImovelDetalhes({
+  params,
+}: {
+  params: { slug: string };
+}) {
+  const imovel = getImovelBySlug(params.slug);
 
   if (!imovel) {
     return (

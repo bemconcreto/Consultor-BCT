@@ -48,12 +48,12 @@ export default function ImoveisPage() {
           >
             <ImovelCard imovel={imovel} />
 
-            <Link
-              href={`/painel/imoveis/${imovel.id}`}
-              className="block text-center px-4 py-2 rounded-lg bg-bc-brown text-white"
-            >
-              Mais detalhes
-            </Link>
+<Link
+  href={`/painel/imoveis/${imovel.slug}`}
+  className="block text-center px-4 py-2 rounded-lg bg-bc-brown text-white"
+>
+  Mais detalhes
+</Link>
           </div>
         ))}
       </div>
