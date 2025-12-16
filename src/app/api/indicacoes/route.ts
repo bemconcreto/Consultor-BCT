@@ -21,12 +21,12 @@ export async function GET() {
     const indicacaoIds = indicacoes.map((i) => i.id);
 
     // 2️⃣ Buscar vendas associadas às indicações
-    const vendas = await prisma.venda.findMany({
-      where: {
-        indicacaoId: { in: indicacaoIds },
-      },
-      orderBy: { dataVenda: "desc" },
-    });
+const vendas = await prisma.venda.findMany({
+  where: {
+    corretorId: session.corretorId,
+  },
+  orderBy: { dataVenda: "desc" },
+});
 
     return NextResponse.json({
       indicacoes,

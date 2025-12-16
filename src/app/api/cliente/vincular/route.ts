@@ -13,9 +13,9 @@ export async function POST(req: Request) {
     }
 
     // 1. Verificar se cliente já está vinculado
-    const existente = await prisma.indicacao.findUnique({
-      where: { accountId }
-    });
+const existente = await prisma.indicacao.findFirst({
+  where: { accountId }
+});
 
     if (existente) {
       return NextResponse.json({

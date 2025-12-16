@@ -13,9 +13,9 @@ export async function POST(req: Request) {
     }
 
     // 1 — Verificar quem indicou esse cliente
-    const indicacao = await prisma.indicacao.findUnique({
-      where: { accountId },
-    });
+const indicacao = await prisma.indicacao.findFirst({
+  where: { accountId },
+});
 
     if (!indicacao) {
       return NextResponse.json(

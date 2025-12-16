@@ -29,10 +29,10 @@ export async function POST(req: Request) {
     }
 
     // 1️⃣ Buscar o consultor que indicou o cliente
-    const indicacao = await prisma.indicacao.findUnique({
-      where: { accountId },
-      include: { corretor: true },
-    });
+const indicacao = await prisma.indicacao.findFirst({
+  where: { accountId },
+  include: { corretor: true },
+});
 
     if (!indicacao) {
       return NextResponse.json(

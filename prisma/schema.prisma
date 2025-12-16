@@ -22,17 +22,23 @@ model Corretor {
   corretorId       String       @unique
   userId           Int          @unique
   user             User         @relation(fields: [userId], references: [id])
+
   nome             String?
   cpf              String?
   endereco         Json?
   creci            String?
   dadosBancarios   Json?
   instagramHandle  String?      @unique
+
   saldoDisponivel  Float        @default(0)
   saldoPendente    Float        @default(0)
+
+  statusCertificacao String?    @map("statuscertificacao")
+
   vendas           Venda[]
   saques           Saque[]
   indicacoes       Indicacao[]
+
   createdAt        DateTime     @default(now())
   updatedAt        DateTime     @updatedAt
 }

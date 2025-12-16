@@ -1,63 +1,62 @@
-export type Imovel = {
-  id: number;
-  nome: string;
-  cidade: string;
-  status: string;
-  categoria: string;
-  imagemCapa: string;
-  imagens: string[];
-  tokenTotal: string;
-  descricaoLonga: string;
-  documentos: { nome: string; arquivo: string }[];
-  valorPago: number;
-  valorMercadoHoje: number;
-};
+"use client";
 
-export const listaImoveis: Imovel[] = [
-  {
-    id: 1,
-    nome: "Vitta Premium Mogi",
-    cidade: "Mogi das Cruzes - SP",
-    status: "Tokenizando",
-    categoria: "Incorporação",
-    imagemCapa: "/imoveis/vitta-premium.jpg",
-    imagens: [
-      "/imoveis/vitta-premium.jpg",
-      "/imoveis/vitta-premium-2.jpg",
-      "/imoveis/vitta-premium-3.jpg",
-    ],
-    tokenTotal: "1.000.000 BCT",
-    descricaoLonga: "O Vitta Premium Mogi é um loteamento moderno...",
-    documentos: [
-      { nome: "Planta do Loteamento", arquivo: "/docs/vitta-planta.pdf" },
-      { nome: "Memorial Descritivo", arquivo: "/docs/vitta-memorial.pdf" },
-    ],
-    valorPago: 3500000,
-    valorMercadoHoje: 5200000,
-  },
-  {
-    id: 2,
-    nome: "The One Saúde — 10 Unidades",
-    cidade: "São Paulo - SP",
-    status: "Em breve",
-    categoria: "Pronto",
-    imagemCapa: "/imoveis/the-one.jpg",
-    imagens: [
-      "/imoveis/the-one.jpg",
-      "/imoveis/the-one-2.jpg",
-      "/imoveis/the-one-3.jpg",
-    ],
-    tokenTotal: "1.000.000 BCT",
-    descricaoLonga: "Unidades comerciais premium...",
-    documentos: [
-      { nome: "Planta Baixa", arquivo: "/docs/theone-planta.pdf" },
-      { nome: "Memorial do Empreendimento", arquivo: "/docs/theone-memorial.pdf" },
-    ],
-    valorPago: 1600000,
-    valorMercadoHoje: 2100000,
-  },
-];
+import { useState } from "react";
+import Link from "next/link";
+import ImovelCard from "@/components/ImovelCard";
+import { listaImoveis } from "./data";
 
-export function getImovelById(id: number) {
-  return listaImoveis.find((i) => i.id === id) ?? null;
+const categorias = ["Todos", "Incorporação", "SCP", "Pronto", "Leilão"];
+
+export default function ImoveisPage() {
+  const [filtro, setFiltro] = useState("Todos");
+
+  const filtrados =
+    filtro === "Todos"
+      ? listaImoveis
+      : listaImoveis.filter((i) => i.categoria === filtro);
+
+  return (
+    <div className="p-8 space-y-10">
+      <div>
+        <h1 className="text-3xl font-semibold text-bc-light">Imóveis</h1>
+        <p className="text-bc-light/70">
+          Projetos tokenizados disponíveis para indicação.
+        </p>
+      </div>
+
+      <div className="flex flex-wrap gap-3">
+        {categorias.map((cat) => (
+          <button
+            key={cat}
+            onClick={() => setFiltro(cat)}
+            className={
+              filtro === cat
+                ? "bg-bc-brown text-white border-bc-brown px-5 py-2 rounded-full"
+                : "bg-white/10 text-bc-light border-white/20 px-5 py-2 rounded-full"
+            }
+          >
+            {cat}
+          </button>
+        ))}
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+        {filtrados.map((imovel) => (
+          <div
+            key={imovel.id}
+            className="space-y-4 bg-white/5 border border-white/10 rounded-xl p-4"
+          >
+            <ImovelCard imovel={imovel} />
+
+            <Link
+              href={`/painel/imoveis/${imovel.id}`}
+              className="block text-center px-4 py-2 rounded-lg bg-bc-brown text-white"
+            >
+              Mais detalhes
+            </Link>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 }

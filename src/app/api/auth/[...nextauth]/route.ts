@@ -55,7 +55,8 @@ const handler = NextAuth({
           });
         }
 
-        const cookieStore = cookies();
+        // ✅ CORREÇÃO CRÍTICA AQUI
+        const cookieStore = await cookies();
 
         cookieStore.set(
           "consultor_session",
