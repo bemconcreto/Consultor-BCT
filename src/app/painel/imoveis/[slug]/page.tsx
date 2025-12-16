@@ -1,16 +1,15 @@
-import { listaImoveis, getImovelBySlug } from "../data";
+import { listaImoveis } from "../data";
 
-export default function ImovelDetalhes({
-  params,
-}: {
-  params: { slug: string };
-}) {
-  console.log("SLUG RECEBIDO:", params.slug);
-  console.log("IMÓVEIS:", listaImoveis);
+type PageProps = {
+  params: {
+    slug: string;
+  };
+};
 
-  const imovel = getImovelBySlug(params.slug);
+export default function Page({ params }: PageProps) {
+  const slug = params.slug;
 
-  console.log("IMÓVEL ENCONTRADO:", imovel);
+  const imovel = listaImoveis.find((i) => i.slug === slug);
 
   if (!imovel) {
     return (
