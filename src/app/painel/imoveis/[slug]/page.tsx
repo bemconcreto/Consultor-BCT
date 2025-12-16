@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { listaImoveis } from "../data";
 
 type PageProps = {
@@ -8,6 +10,8 @@ type PageProps = {
 
 export default function Page({ params }: PageProps) {
   const slug = params.slug;
+
+  console.log("SLUG RECEBIDO:", slug);
 
   const imovel = listaImoveis.find((i) => i.slug === slug);
 
