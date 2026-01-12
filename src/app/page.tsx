@@ -1,11 +1,19 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
 
-export default function LoginPage() {
+export default function Page() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-[#ECE9E6]" />}>
+      <LoginContent />
+    </Suspense>
+  );
+}
+
+function LoginContent() {
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
   const [loading, setLoading] = useState(false);
@@ -74,7 +82,7 @@ export default function LoginPage() {
 
         <button
           onClick={() => signIn("google", { callbackUrl })}
-          className="w-full py-3 rounded-lg border border-gray-300 flex justify-center gap-2"
+          className="w-full py-3 rounded-lg border border-gray-300"
         >
           Entrar com Google
         </button>
