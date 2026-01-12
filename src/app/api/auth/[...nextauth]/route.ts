@@ -89,21 +89,23 @@ export const authOptions: AuthOptions = {
       // 3️⃣ COOKIE (🔑 O QUE FAZ TUDO FUNCIONAR)
       const cookieStore = await cookies();
 
-      cookieStore.set(
-        "consultor_session",
-        JSON.stringify({
-          userId: dbUser.id,
-          corretorId: corretor.id,
-          email: dbUser.email,
-          createdAt: Date.now(),
-        }),
-        {
-          httpOnly: true,
-          secure: process.env.NODE_ENV === "production",
-          path: "/",
-          maxAge: 60 * 60 * 24 * 7, // 7 dias
-        }
-      );
+cookieStore.set(
+  "consultor_session",
+  JSON.stringify({
+    userId: dbUser.id,
+    corretorId: corretor.id,
+    email: dbUser.email,
+    createdAt: Date.now(),
+  }),
+  {
+    httpOnly: true,
+    secure: true,
+    sameSite: "lax",
+    path: "/",
+    domain: ".bemconcreto.com", // ✅ ESSA LINHA MUDA TUDO
+    maxAge: 60 * 60 * 24 * 7,
+  }
+);
 
       return true;
     },
