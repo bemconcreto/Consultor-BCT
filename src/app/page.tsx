@@ -3,11 +3,15 @@
 import { useState } from "react";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
+import { useSearchParams } from "next/navigation";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl") || "/painel";
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
@@ -16,7 +20,7 @@ export default function LoginPage() {
     await signIn("credentials", {
       email,
       password: senha,
-      callbackUrl: "/painel",
+      callbackUrl,
     });
 
     setLoading(false);
@@ -26,22 +30,19 @@ export default function LoginPage() {
     <div className="min-h-screen flex items-center justify-center bg-[#ECE9E6] px-4">
       <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8 space-y-6">
 
-        {/* TÍTULO */}
         <h1 className="text-2xl font-semibold text-center text-gray-900">
           Entrar
         </h1>
 
-        {/* LOGIN EMAIL */}
         <form onSubmit={handleLogin} className="space-y-4">
           <div>
             <label className="text-sm font-medium text-gray-700">E-mail</label>
             <input
               type="email"
-              placeholder="email@exemplo.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="mt-1 w-full rounded-lg border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-bc-brown"
+              className="mt-1 w-full rounded-lg border border-gray-300 px-4 py-3"
             />
           </div>
 
@@ -49,55 +50,44 @@ export default function LoginPage() {
             <label className="text-sm font-medium text-gray-700">Senha</label>
             <input
               type="password"
-              placeholder="Sua senha"
               value={senha}
               onChange={(e) => setSenha(e.target.value)}
               required
-              className="mt-1 w-full rounded-lg border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-bc-brown"
+              className="mt-1 w-full rounded-lg border border-gray-300 px-4 py-3"
             />
           </div>
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 rounded-lg bg-black text-white font-medium hover:opacity-90 transition"
+            className="w-full py-3 rounded-lg bg-black text-white font-medium"
           >
             {loading ? "Entrando..." : "Entrar"}
           </button>
         </form>
 
-        {/* DIVISOR */}
         <div className="flex items-center gap-3">
           <div className="flex-1 h-px bg-gray-200" />
           <span className="text-xs text-gray-400">ou</span>
           <div className="flex-1 h-px bg-gray-200" />
         </div>
 
-        {/* GOOGLE */}
         <button
-          onClick={() => signIn("google", { callbackUrl: "/painel" })}
-          className="w-full py-3 rounded-lg border border-gray-300 flex items-center justify-center gap-2 hover:bg-gray-50 transition"
+          onClick={() => signIn("google", { callbackUrl })}
+          className="w-full py-3 rounded-lg border border-gray-300 flex justify-center gap-2"
         >
-          <img src="/icons/google.svg" alt="Google" className="h-5" />
-          <span className="font-medium text-gray-700">
-            Entrar com Google
-          </span>
+          Entrar com Google
         </button>
 
-        {/* CARTEIRA */}
         <button
-          onClick={() => signIn("wallet", { callbackUrl: "/painel" })}
-          className="w-full py-3 rounded-lg border border-gray-300 hover:bg-gray-50 transition font-medium text-gray-700"
+          onClick={() => signIn("wallet", { callbackUrl })}
+          className="w-full py-3 rounded-lg border border-gray-300"
         >
           Entrar com carteira
         </button>
 
-        {/* AÇÕES */}
         <div className="pt-4 space-y-3 text-center text-sm">
-          <Link
-            href="/verificar-email"
-            className="block text-gray-500 hover:underline"
-          >
+          <Link href="/verificar-email" className="block text-gray-500">
             Reenviar e-mail de verificação
           </Link>
 
@@ -105,7 +95,7 @@ export default function LoginPage() {
             href="https://certificacao.bemconcreto.com/cadastro"
             target="_blank"
             rel="noopener noreferrer"
-            className="block w-full py-3 rounded-lg bg-bc-brown text-white font-medium hover:opacity-90 transition"
+            className="block w-full py-3 rounded-lg bg-[#8D6E63] text-white font-medium"
           >
             Criar conta
           </a>
