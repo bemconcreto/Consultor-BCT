@@ -2,16 +2,15 @@ import NextAuth, { AuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { prisma } from "@/lib/prisma";
+import { cookies } from "next/headers";
 
 export const authOptions: AuthOptions = {
   providers: [
-    // 🔐 LOGIN COM GOOGLE
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
     }),
 
-    // 🔐 LOGIN COM EMAIL/SENHA
     CredentialsProvider({
       name: "credentials",
       credentials: {
@@ -19,7 +18,7 @@ export const authOptions: AuthOptions = {
         password: { label: "Senha", type: "password" },
       },
       async authorize(credentials) {
-        if (!credentials?.email || !credentials.password) return null;
+        if (!credentials?.email) return null;
 
         const email = credentials.email.toLowerCase();
 
@@ -29,9 +28,8 @@ export const authOptions: AuthOptions = {
 
         if (!user) return null;
 
-        // ⚠️ se depois quiser hash de senha, valida aqui
         return {
-          id: user.id.toString(),
+          id: String(user.id),
           email: user.email,
           name: user.name,
         };
@@ -40,16 +38,20 @@ export const authOptions: AuthOptions = {
   ],
 
   pages: {
-    signIn: "/", // sua tela de login
+    signIn: "/",
+  },
+
+  session: {
+    strategy: "jwt",
   },
 
   callbacks: {
-    // 🚀 CRIA USER + CORRETOR NO PRIMEIRO LOGIN
     async signIn({ user }) {
       if (!user?.email) return false;
 
       const email = user.email.toLowerCase();
 
+      // 1️⃣ USER
       let dbUser = await prisma.user.findUnique({
         where: { email },
       });
@@ -63,7 +65,8 @@ export const authOptions: AuthOptions = {
         });
       }
 
-      const corretor = await prisma.corretor.findUnique({
+      // 2️⃣ CORRETOR
+      let corretor = await prisma.corretor.findUnique({
         where: { userId: dbUser.id },
       });
 
@@ -74,7 +77,7 @@ export const authOptions: AuthOptions = {
 
         const nextId = (last?.id ?? 0) + 1;
 
-        await prisma.corretor.create({
+        corretor = await prisma.corretor.create({
           data: {
             userId: dbUser.id,
             corretorId: `BCTCR-${String(nextId).padStart(5, "0")}`,
@@ -83,15 +86,26 @@ export const authOptions: AuthOptions = {
         });
       }
 
-      return true;
-    },
+      // 3️⃣ COOKIE (🔑 O QUE FAZ TUDO FUNCIONAR)
+      const cookieStore = await cookies();
 
-    // 🔑 COLOCA USER ID NA SESSION
-    async session({ session, token }) {
-      if (token?.sub) {
-        session.user.id = Number(token.sub);
-      }
-      return session;
+      cookieStore.set(
+        "consultor_session",
+        JSON.stringify({
+          userId: dbUser.id,
+          corretorId: corretor.id,
+          email: dbUser.email,
+          createdAt: Date.now(),
+        }),
+        {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production",
+          path: "/",
+          maxAge: 60 * 60 * 24 * 7, // 7 dias
+        }
+      );
+
+      return true;
     },
 
     async redirect() {
@@ -99,13 +113,8 @@ export const authOptions: AuthOptions = {
     },
   },
 
-  session: {
-    strategy: "jwt",
-  },
-
   secret: process.env.NEXTAUTH_SECRET,
 };
 
 const handler = NextAuth(authOptions);
-
 export { handler as GET, handler as POST };
