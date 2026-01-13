@@ -1,12 +1,39 @@
 "use client";
 
+import { Suspense } from "react";
 import { signIn } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
 
+/**
+ * Página principal (wrapper)
+ * ⚠️ Obrigatório usar Suspense aqui
+ */
 export default function Page() {
+  return (
+    <Suspense fallback={<Loading />}>
+      <LoginContent />
+    </Suspense>
+  );
+}
+
+/**
+ * Componente de loading simples
+ */
+function Loading() {
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-[#ECE9E6]">
+      <p className="text-gray-600">Carregando…</p>
+    </div>
+  );
+}
+
+/**
+ * Conteúdo real da página
+ * ✅ Aqui pode usar useSearchParams
+ */
+function LoginContent() {
   const searchParams = useSearchParams();
 
-  // 🔑 Se vier callbackUrl, respeita. Senão, painel.
   const callbackUrl =
     searchParams.get("callbackUrl") || "/painel";
 
@@ -19,17 +46,20 @@ export default function Page() {
         </h1>
 
         <p className="text-sm text-gray-600">
-          Acesse com sua conta Google para continuar.
+          Comece hoje mesmo a gerar renda extra de forma passiva.
+          Compartilhe seu link e acompanhe sua evolução como consultor BCT.
         </p>
 
         <button
-          onClick={() =>
-            signIn("google", { callbackUrl })
-          }
+          onClick={() => signIn("google", { callbackUrl })}
           className="w-full py-3 rounded-lg bg-black text-white font-medium"
         >
           Entrar com Google
         </button>
+
+        <p className="text-xs text-[#8D6E63] font-semibold">
+          ⚠️ Não esqueça de se certificar — isso dobra a sua comissão!
+        </p>
 
       </div>
     </div>
