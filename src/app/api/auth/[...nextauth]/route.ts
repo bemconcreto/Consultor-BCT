@@ -1,44 +1,17 @@
-import NextAuth, { AuthOptions } from "next-auth";
+import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
-import CredentialsProvider from "next-auth/providers/credentials";
 import { prisma } from "@/lib/prisma";
-import { cookies } from "next/headers";
 
-export const authOptions: AuthOptions = {
+const handler = NextAuth({
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
     }),
-
-    CredentialsProvider({
-      name: "credentials",
-      credentials: {
-        email: { label: "Email", type: "email" },
-        password: { label: "Senha", type: "password" },
-      },
-      async authorize(credentials) {
-        if (!credentials?.email) return null;
-
-        const email = credentials.email.toLowerCase();
-
-        const user = await prisma.user.findUnique({
-          where: { email },
-        });
-
-        if (!user) return null;
-
-        return {
-          id: String(user.id),
-          email: user.email,
-          name: user.name,
-        };
-      },
-    }),
   ],
 
   pages: {
-    signIn: "/",
+    signIn: "/", // usa app/page.tsx
   },
 
   session: {
@@ -47,11 +20,11 @@ export const authOptions: AuthOptions = {
 
   callbacks: {
     async signIn({ user }) {
-      if (!user?.email) return false;
+      if (!user.email) return false;
 
       const email = user.email.toLowerCase();
 
-      // 1️⃣ USER
+      // USER
       let dbUser = await prisma.user.findUnique({
         where: { email },
       });
@@ -65,7 +38,7 @@ export const authOptions: AuthOptions = {
         });
       }
 
-      // 2️⃣ CORRETOR
+      // CORRETOR
       let corretor = await prisma.corretor.findUnique({
         where: { userId: dbUser.id },
       });
@@ -77,7 +50,7 @@ export const authOptions: AuthOptions = {
 
         const nextId = (last?.id ?? 0) + 1;
 
-        corretor = await prisma.corretor.create({
+        await prisma.corretor.create({
           data: {
             userId: dbUser.id,
             corretorId: `BCTCR-${String(nextId).padStart(5, "0")}`,
@@ -86,28 +59,14 @@ export const authOptions: AuthOptions = {
         });
       }
 
-      // 3️⃣ COOKIE (🔑 O QUE FAZ TUDO FUNCIONAR)
-      const cookieStore = await cookies();
-
-cookieStore.set(
-  "consultor_session",
-  JSON.stringify({
-    userId: dbUser.id,
-    corretorId: corretor.id,
-    email: dbUser.email,
-    createdAt: Date.now(),
-  }),
-  {
-    httpOnly: true,
-    secure: true,
-    sameSite: "lax",
-    path: "/",
-    domain: ".bemconcreto.com", // ✅ ESSA LINHA MUDA TUDO
-    maxAge: 60 * 60 * 24 * 7,
-  }
-);
-
       return true;
+    },
+
+    async session({ session, token }) {
+      if (token?.sub && session.user) {
+        (session.user as any).id = Number(token.sub);
+      }
+      return session;
     },
 
     async redirect() {
@@ -116,7 +75,6 @@ cookieStore.set(
   },
 
   secret: process.env.NEXTAUTH_SECRET,
-};
+});
 
-const handler = NextAuth(authOptions);
 export { handler as GET, handler as POST };
