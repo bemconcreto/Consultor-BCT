@@ -1,36 +1,35 @@
 "use client";
 
 import { signIn } from "next-auth/react";
+import { useSearchParams } from "next/navigation";
 
 export default function Page() {
+  const searchParams = useSearchParams();
+
+  // 🔑 Se vier callbackUrl, respeita. Senão, painel.
+  const callbackUrl =
+    searchParams.get("callbackUrl") || "/painel";
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#ECE9E6] px-4">
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-10 space-y-6 text-center">
+      <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8 space-y-6 text-center">
 
-        {/* TÍTULO */}
         <h1 className="text-2xl font-semibold text-gray-900">
           Consultor BCT
         </h1>
 
-        {/* SUBTÍTULO */}
-        <p className="text-sm text-gray-600 leading-relaxed">
-          Comece hoje mesmo a ter renda extra de forma passiva.
-          Compartilhe seu link e acompanhe o seu crescimento como
-          consultor BCT.
+        <p className="text-sm text-gray-600">
+          Acesse com sua conta Google para continuar.
         </p>
 
-        {/* BOTÃO GOOGLE */}
         <button
-          onClick={() => signIn("google", { callbackUrl: "/painel" })}
-          className="w-full py-3 rounded-lg bg-black text-white font-medium hover:opacity-90 transition"
+          onClick={() =>
+            signIn("google", { callbackUrl })
+          }
+          className="w-full py-3 rounded-lg bg-black text-white font-medium"
         >
           Entrar com Google
         </button>
-
-        {/* ALERTA CERTIFICAÇÃO */}
-        <p className="text-xs text-[#8D6E63] font-medium">
-          ⚠️ Não esqueça de se certificar, isso dobra a sua comissão!
-        </p>
 
       </div>
     </div>
