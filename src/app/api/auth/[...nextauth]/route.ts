@@ -18,61 +18,69 @@ export const authOptions: NextAuthOptions = {
     strategy: "jwt",
   },
 
-  callbacks: {
-    async signIn({ user }) {
-      if (!user.email) return false;
+callbacks: {
+  async signIn({ user }) {
+    if (!user.email) return false;
 
-      const email = user.email.toLowerCase();
+    const email = user.email.toLowerCase();
 
-      // USER
-      let dbUser = await prisma.user.findUnique({
-        where: { email },
+    let dbUser = await prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (!dbUser) {
+      dbUser = await prisma.user.create({
+        data: {
+          email,
+          name: user.name ?? null,
+        },
+      });
+    }
+
+    let corretor = await prisma.corretor.findUnique({
+      where: { userId: dbUser.id },
+    });
+
+    if (!corretor) {
+      const last = await prisma.corretor.findFirst({
+        orderBy: { id: "desc" },
       });
 
-      if (!dbUser) {
-        dbUser = await prisma.user.create({
-          data: {
-            email,
-            name: user.name ?? null,
-          },
-        });
-      }
+      const nextId = (last?.id ?? 0) + 1;
 
-      // CORRETOR
-      let corretor = await prisma.corretor.findUnique({
-        where: { userId: dbUser.id },
+      await prisma.corretor.create({
+        data: {
+          userId: dbUser.id,
+          corretorId: `BCTCR-${String(nextId).padStart(5, "0")}`,
+          statusCertificacao: "pendente",
+        },
       });
+    }
 
-      if (!corretor) {
-        const last = await prisma.corretor.findFirst({
-          orderBy: { id: "desc" },
-        });
+    // 🔑 guarda o ID REAL do banco no user object
+    (user as any).dbUserId = dbUser.id;
 
-        const nextId = (last?.id ?? 0) + 1;
-
-        await prisma.corretor.create({
-          data: {
-            userId: dbUser.id,
-            corretorId: `BCTCR-${String(nextId).padStart(5, "0")}`,
-            statusCertificacao: "pendente",
-          },
-        });
-      }
-
-      return true;
-    },
-
-    async session({ session, token }) {
-      if (token?.sub && session.user) {
-        (session.user as any).id = Number(token.sub);
-      }
-      return session;
-    },
-
-    async redirect() {
-      return "/painel";
-    },
+    return true;
   },
+
+  async jwt({ token, user }) {
+    if (user && (user as any).dbUserId) {
+      token.userId = (user as any).dbUserId;
+    }
+    return token;
+  },
+
+  async session({ session, token }) {
+    if (session.user && token.userId) {
+      (session.user as any).id = token.userId;
+    }
+    return session;
+  },
+
+  async redirect() {
+    return "/painel";
+  },
+},
 
   secret: process.env.NEXTAUTH_SECRET,
 };
