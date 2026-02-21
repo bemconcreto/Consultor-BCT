@@ -48,7 +48,7 @@ const checksummedAddress = getAddress(address);
 const siweMessage = new SiweMessage({
   domain,
   address: checksummedAddress,
-  statement: "Entrar no Consultor-BCT assinando com sua carteira.",
+  statement: "Entrar no Consultor-BEM assinando com sua carteira.",
   uri: origin,
   version: "1",
   chainId,

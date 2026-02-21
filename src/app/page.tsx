@@ -29,16 +29,16 @@ export default function Page() {
             <div className="relative mb-4">
               <div className="absolute -inset-3 rounded-full bg-gradient-to-br from-[#8D6E63]/20 to-[#CBA35C]/10 blur-xl" />
               <div className="relative w-16 h-16 rounded-2xl bg-gradient-to-br from-[#8D6E63] to-[#CBA35C] flex items-center justify-center shadow-sm">
-                <span className="text-white font-bold text-xl tracking-tight">BCT</span>
+                <span className="text-white font-bold text-xl tracking-tight">BEM</span>
               </div>
             </div>
             <h1 className="text-2xl font-bold text-[#101820] tracking-tight">
-              Consultor BCT
+              Consultor BEM CONCRETO
             </h1>
             <p className="text-sm text-[#6B7280] mt-1.5 leading-relaxed text-center">
               Comece hoje mesmo a ter renda extra de forma passiva.
               Compartilhe seu link e acompanhe o seu crescimento como
-              consultor BCT.
+              consultor BEM.
             </p>
           </div>
 
