@@ -7,7 +7,7 @@ const manrope = Manrope({
 });
 
 export const metadata = {
-  title: "Consultor BCT",
+  title: "Consultor BEM",
   description: "Painel Bem Concreto",
 };
 

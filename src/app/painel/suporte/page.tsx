@@ -54,7 +54,7 @@ const faq = [
     a: "Os ativos são divididos em frações digitais (tokens), permitindo que investidores comprem partes de projetos imobiliários."
   },
   {
-    q: "O que é o BCT?",
+    q: "O que é o BEM?",
     a: "É o token de utilidade da Bem Concreto, utilizado para participação nos projetos tokenizados."
   },
   {

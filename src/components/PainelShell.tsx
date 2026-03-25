@@ -31,7 +31,7 @@ export default function PainelShell({ children }: { children: React.ReactNode })
         {/* LOGO / BRANDING */}
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Bem Concreto</h1>
-          <p className="text-sm opacity-80 mt-1">Consultor BCT</p>
+          <p className="text-sm opacity-80 mt-1">Consultor BEM</p>
           <div className="mt-4 w-16 h-1 bg-[#C7A58B] rounded-full"></div>
         </div>
 
