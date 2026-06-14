@@ -2,7 +2,9 @@
 
 import { useState } from "react";
 import { MessageCircle, ChevronDown, ChevronUp } from "lucide-react";
-import Link from "next/link";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 const faq = [
   {
@@ -91,58 +93,60 @@ export default function SuportePage() {
   const [open, setOpen] = useState<number | null>(null);
 
   return (
-    <div className="max-w-4xl mx-auto space-y-10">
-      
-      {/* Título */}
+    <div className="flex flex-col gap-8">
+      {/* HEADER */}
       <div>
-        <h1 className="text-3xl font-semibold text-bc-light">Suporte</h1>
-        <p className="text-bc-light/80 mt-2">
+        <h1 className="text-2xl font-bold text-[#101820] tracking-tight">Suporte</h1>
+        <p className="text-sm text-[#6B7280] mt-1">
           Tire suas dúvidas ou fale diretamente com nosso time.
         </p>
       </div>
 
       {/* FAQ */}
-      <div className="space-y-3">
-        {faq.map((item, idx) => (
-          <div
-            key={idx}
-            className="bg-white/10 border border-white/10 rounded-xl p-5 cursor-pointer"
-            onClick={() => setOpen(open === idx ? null : idx)}
-          >
-            <div className="flex justify-between items-center">
-              <h3 className="text-lg font-medium text-bc-light">{item.q}</h3>
-              {open === idx ? (
-                <ChevronUp className="text-bc-light" />
-              ) : (
-                <ChevronDown className="text-bc-light" />
+      <Card>
+        <CardContent className="flex flex-col gap-2">
+          {faq.map((item, idx) => (
+            <div
+              key={idx}
+              className={cn(
+                "rounded-xl border border-border p-4 cursor-pointer transition-colors hover:bg-muted/50",
+                open === idx && "bg-muted/50"
+              )}
+              onClick={() => setOpen(open === idx ? null : idx)}
+            >
+              <div className="flex justify-between items-center gap-4">
+                <h3 className="text-sm font-medium text-[#101820]">{item.q}</h3>
+                {open === idx ? (
+                  <ChevronUp className="w-4 h-4 text-muted-foreground shrink-0" />
+                ) : (
+                  <ChevronDown className="w-4 h-4 text-muted-foreground shrink-0" />
+                )}
+              </div>
+
+              {open === idx && (
+                <p className="text-sm text-[#6B7280] mt-2 leading-relaxed">{item.a}</p>
               )}
             </div>
+          ))}
+        </CardContent>
+      </Card>
 
-            {open === idx && (
-              <p className="text-bc-light/70 mt-3 leading-relaxed">
-                {item.a}
-              </p>
-            )}
-          </div>
-        ))}
-      </div>
-
-      {/* WHATSAPP BUTTON */}
-      <div className="text-center pt-6">
-        <p className="text-bc-light/80 mb-3">Precisa de ajuda personalizada?</p>
-
-        <Link
-          href="https://wa.me/5511975967575"
-          target="_blank"
-          className="
-            inline-flex items-center gap-3 px-8 py-4 rounded-xl
-            bg-green-600 hover:bg-green-500 text-white font-semibold
-            shadow-lg transition
-          "
-        >
-          <MessageCircle size={22} /> Falar com o suporte
-        </Link>
-      </div>
+      {/* WHATSAPP CTA */}
+      <Card>
+        <CardContent className="flex flex-col items-center text-center gap-3">
+          <p className="text-sm text-[#6B7280]">Precisa de ajuda personalizada?</p>
+          <Button
+            asChild
+            size="lg"
+            className="bg-green-600 hover:bg-green-500 text-white"
+          >
+            <a href="https://wa.me/5511975967575" target="_blank" rel="noreferrer">
+              <MessageCircle className="w-5 h-5" />
+              Falar com o suporte
+            </a>
+          </Button>
+        </CardContent>
+      </Card>
     </div>
   );
 }

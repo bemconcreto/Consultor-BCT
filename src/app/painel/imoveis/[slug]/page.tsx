@@ -1,7 +1,11 @@
 "use client";
 
+import type { ComponentType } from "react";
 import { useParams } from "next/navigation";
 import Image from "next/image";
+import { FileText, PieChart, Wallet, DollarSign, TrendingUp } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { listaImoveis } from "../data";
 
 export default function ImovelDetalhes() {
@@ -11,126 +15,130 @@ export default function ImovelDetalhes() {
   const imovel = listaImoveis.find((i) => i.slug === slug);
 
   if (!imovel) {
-    return (
-      <div className="p-10 text-white">
-        Imóvel não encontrado.
-      </div>
-    );
+    return <p className="text-sm text-muted-foreground">Imóvel não encontrado.</p>;
   }
 
-  // 🔢 Pool total (soma do valor de mercado de todos os imóveis)
+  // Pool total (soma do valor de mercado de todos os imóveis)
   const poolTotal = listaImoveis.reduce(
     (total, im) => total + im.valorMercadoHoje,
     0
   );
 
-  const percentualPool =
-    (imovel.valorMercadoHoje / poolTotal) * 100;
+  const percentualPool = (imovel.valorMercadoHoje / poolTotal) * 100;
 
   const valorizacao =
     ((imovel.valorMercadoHoje - imovel.valorPago) / imovel.valorPago) * 100;
 
   return (
-    <div className="p-8 space-y-10 text-white">
-
+    <div className="flex flex-col gap-8">
       {/* HEADER */}
-      <div className="space-y-2">
-        <h1 className="text-3xl font-semibold">{imovel.nome}</h1>
-        <p className="text-white/70">{imovel.cidade}</p>
+      <div>
+        <h1 className="text-2xl font-bold text-[#101820] tracking-tight">{imovel.nome}</h1>
+        <p className="text-sm text-[#6B7280] mt-1">{imovel.cidade}</p>
 
-        <div className="flex gap-3 text-sm">
-          <span className="px-3 py-1 rounded-full bg-white/10">
+        <div className="flex gap-2 mt-3">
+          <Badge variant="outline" className="border-emerald-200 bg-emerald-50 text-emerald-700">
             {imovel.status}
-          </span>
-          <span className="px-3 py-1 rounded-full bg-white/10">
-            {imovel.categoria}
-          </span>
+          </Badge>
+          <Badge variant="outline">{imovel.categoria}</Badge>
         </div>
       </div>
 
       {/* GALERIA */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="md:col-span-2">
-          <Image
-            src={imovel.imagemCapa}
-            alt={imovel.nome}
-            width={1200}
-            height={700}
-            className="rounded-xl object-cover"
-          />
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="md:col-span-2 relative h-64 md:h-80 rounded-xl overflow-hidden bg-muted">
+          <Image src={imovel.imagemCapa} alt={imovel.nome} fill className="object-cover" />
         </div>
 
         <div className="grid grid-cols-2 gap-4">
           {imovel.imagens.map((img, i) => (
-            <Image
-              key={i}
-              src={img}
-              alt={`${imovel.nome} ${i + 1}`}
-              width={400}
-              height={300}
-              className="rounded-lg object-cover"
-            />
+            <div key={i} className="relative h-32 md:h-[9.5rem] rounded-lg overflow-hidden bg-muted">
+              <Image src={img} alt={`${imovel.nome} ${i + 1}`} fill className="object-cover" />
+            </div>
           ))}
         </div>
       </div>
 
       {/* DADOS FINANCEIROS */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <InfoCard
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <KpiCard
+          icon={PieChart}
           title="Participação na Pool"
           value={`${percentualPool.toFixed(2)}% do total`}
         />
-        <InfoCard
+        <KpiCard
+          icon={Wallet}
           title="Valor Pago"
           value={`R$ ${imovel.valorPago.toLocaleString("pt-BR")}`}
         />
-        <InfoCard
+        <KpiCard
+          icon={DollarSign}
           title="Valor de Mercado"
           value={`R$ ${imovel.valorMercadoHoje.toLocaleString("pt-BR")}`}
         />
-        <InfoCard
+        <KpiCard
+          icon={TrendingUp}
           title="Valorização"
           value={`${valorizacao.toFixed(1)}%`}
         />
       </div>
 
       {/* DESCRIÇÃO */}
-      <div className="space-y-4 max-w-4xl">
-        <h2 className="text-2xl font-semibold">Sobre o empreendimento</h2>
-        <p className="text-white/80 leading-relaxed">
-          {imovel.descricaoLonga}
-        </p>
-      </div>
+      <Card>
+        <CardHeader>
+          <CardTitle>Sobre o empreendimento</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-sm text-[#6B7280] leading-relaxed">{imovel.descricaoLonga}</p>
+        </CardContent>
+      </Card>
 
       {/* DOCUMENTOS */}
-      <div className="space-y-4">
-        <h2 className="text-2xl font-semibold">Documentos</h2>
-
-        <div className="flex flex-wrap gap-4">
-          {imovel.documentos.map((doc, i) => (
-            <a
-              key={i}
-              href={doc.arquivo}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="px-5 py-3 rounded-lg bg-white/10 hover:bg-white/20 transition"
-            >
-              📄 {doc.nome}
-            </a>
-          ))}
-        </div>
-      </div>
-
+      <Card>
+        <CardHeader>
+          <CardTitle>Documentos</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-wrap gap-3">
+            {imovel.documentos.map((doc, i) => (
+              <a
+                key={i}
+                href={doc.arquivo}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-border bg-muted/50 text-sm text-[#101820] hover:bg-muted transition-colors"
+              >
+                <FileText className="w-4 h-4 text-primary" />
+                {doc.nome}
+              </a>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }
 
-/* COMPONENTE AUXILIAR */
-function InfoCard({ title, value }: { title: string; value: string }) {
+function KpiCard({
+  icon: Icon,
+  title,
+  value,
+}: {
+  icon: ComponentType<{ className?: string }>;
+  title: string;
+  value: string;
+}) {
   return (
-    <div className="p-5 rounded-xl bg-white/5 border border-white/10">
-      <p className="text-sm text-white/60">{title}</p>
-      <p className="text-xl font-semibold mt-1">{value}</p>
-    </div>
+    <Card>
+      <CardContent className="flex items-center gap-4">
+        <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
+          <Icon className="w-5 h-5" />
+        </div>
+        <div className="min-w-0">
+          <p className="text-sm text-muted-foreground truncate">{title}</p>
+          <p className="text-2xl font-bold text-[#101820] truncate">{value}</p>
+        </div>
+      </CardContent>
+    </Card>
   );
 }

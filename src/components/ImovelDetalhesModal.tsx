@@ -1,29 +1,50 @@
-export default function ImovelDetalhesModal({ imovel, onClose }) {
+"use client";
+
+import Image from "next/image";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import type { Imovel } from "@/app/painel/imoveis/data";
+
+function truncate(text: string, length: number) {
+  return text.length > length ? `${text.slice(0, length).trim()}...` : text;
+}
+
+export default function ImovelDetalhesModal({
+  imovel,
+  onClose,
+}: {
+  imovel: Imovel;
+  onClose: () => void;
+}) {
   return (
-    <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
-      <div className="bg-white w-full max-w-lg rounded-xl shadow-xl p-6">
-        <h2 className="text-xl font-bold">{imovel.nome}</h2>
-        <p className="text-gray-600 mt-1">{imovel.descricaoCurta}</p>
+    <Dialog open onOpenChange={(open) => !open && onClose()}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>{imovel.nome}</DialogTitle>
+          <DialogDescription>{truncate(imovel.descricaoLonga, 140)}</DialogDescription>
+        </DialogHeader>
 
-        <img
-          src={imovel.imagem}
-          className="rounded-lg mt-4"
-          alt={imovel.nome}
-        />
-
-        <div className="mt-6 space-y-2 text-gray-700">
-          <p><strong>Cidade:</strong> {imovel.cidade}</p>
-          <p><strong>Status:</strong> {imovel.status}</p>
-          <p><strong>Total tokenizado:</strong> {imovel.tokenTotal}</p>
+        <div className="relative h-48 w-full rounded-lg overflow-hidden bg-muted">
+          <Image src={imovel.imagemCapa} alt={imovel.nome} fill className="object-cover" />
         </div>
 
-        <button
-          onClick={onClose}
-          className="mt-6 w-full py-3 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition"
-        >
-          Fechar
-        </button>
-      </div>
-    </div>
+        <div className="space-y-1.5 text-sm text-[#101820]">
+          <p>
+            <span className="font-medium">Cidade:</span> {imovel.cidade}
+          </p>
+          <p>
+            <span className="font-medium">Status:</span> {imovel.status}
+          </p>
+          <p>
+            <span className="font-medium">Total tokenizado:</span> {imovel.tokenTotal}
+          </p>
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 }

@@ -1,6 +1,16 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Badge } from "@/components/ui/badge";
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableRow,
+  TableHead,
+  TableCell,
+} from "@/components/ui/table";
+import { cn } from "@/lib/utils";
 
 function formatDate(dateString: any) {
   if (!dateString) return "-";
@@ -38,68 +48,45 @@ export default function VendasRecentes({ corretorId }: { corretorId: number }) {
     load();
   }, []);
 
+  if (loading) {
+    return <p className="text-sm text-muted-foreground">Carregando vendas...</p>;
+  }
+
+  if (vendas.length === 0) {
+    return <p className="text-sm text-muted-foreground">Nenhuma venda encontrada.</p>;
+  }
+
   return (
-    <div
-      className="
-        mt-14 p-8 rounded-2xl shadow-lg backdrop-blur-md
-        border border-white/10
-        bg-[#2b1f1a]/60
-        text-white
-      "
-    >
-      {/* Tabela */}
-      {loading ? (
-        <p className="text-white/70">Carregando vendas...</p>
-      ) : vendas.length === 0 ? (
-        <p className="text-white/70">Nenhuma venda encontrada.</p>
-      ) : (
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="text-left border-b border-white/10 text-white/70">
-                <th className="pb-3">Data</th>
-                <th className="pb-3">Valor</th>
-                <th className="pb-3">Comissão</th>
-                <th className="pb-3">Status</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              {vendas.map((venda) => (
-                <tr
-                  key={venda.id}
-                  className="border-b border-white/10 last:border-none"
-                >
-                  <td className="py-3">{formatDate(venda.dataVenda)}</td>
-
-                  <td className="py-3 font-medium">
-                    R$ {venda.valor.toFixed(2)}
-                  </td>
-
-                  <td className="py-3 font-medium">
-                    R$ {venda.comissao.toFixed(2)}
-                  </td>
-
-                  <td className="py-3">
-                    <span
-                      className={`
-                        px-3 py-1 rounded-full text-xs text-white
-                        ${
-                          venda.status === "paga"
-                            ? "bg-emerald-600"
-                            : "bg-yellow-600"
-                        }
-                      `}
-                    >
-                      {venda.status}
-                    </span>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
-    </div>
+    <Table>
+      <TableHeader>
+        <TableRow>
+          <TableHead>Data</TableHead>
+          <TableHead>Valor</TableHead>
+          <TableHead>Comissão</TableHead>
+          <TableHead>Status</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {vendas.map((venda) => (
+          <TableRow key={venda.id}>
+            <TableCell>{formatDate(venda.dataVenda)}</TableCell>
+            <TableCell className="font-medium">R$ {venda.valor.toFixed(2)}</TableCell>
+            <TableCell className="font-medium">R$ {venda.comissao.toFixed(2)}</TableCell>
+            <TableCell>
+              <Badge
+                variant="outline"
+                className={cn(
+                  venda.status === "paga"
+                    ? "border-emerald-200 bg-emerald-50 text-emerald-700"
+                    : "border-amber-200 bg-amber-50 text-amber-700"
+                )}
+              >
+                {venda.status}
+              </Badge>
+            </TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
   );
 }

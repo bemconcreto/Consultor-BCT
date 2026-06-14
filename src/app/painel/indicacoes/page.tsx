@@ -1,11 +1,35 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ArrowUp, ArrowDown, Minus } from "lucide-react";
+import { ArrowUp, ArrowDown, Minus, Users, ShoppingCart } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableRow,
+  TableHead,
+  TableCell,
+} from "@/components/ui/table";
+import { cn } from "@/lib/utils";
+
+type Indicacao = {
+  id: number;
+  nome?: string;
+  instagram?: string;
+};
+
+type Venda = {
+  id: number;
+  indicacaoId: number;
+  valor: number;
+  status: string;
+};
 
 export default function IndicacoesPage() {
-  const [indicacoes, setIndicacoes] = useState([]);
-  const [vendas, setVendas] = useState([]);
+  const [indicacoes, setIndicacoes] = useState<Indicacao[]>([]);
+  const [vendas, setVendas] = useState<Venda[]>([]);
   const [loading, setLoading] = useState(true);
 
   async function load() {
@@ -30,122 +54,136 @@ export default function IndicacoesPage() {
 
   // --- EVOLUÇÃO ---
   // Lógica simples por enquanto: se vendas > 0 está subindo.
-  let evolucaoIcon = <Minus size={26} className="text-yellow-400" />;
+  let EvolucaoIcon = Minus;
   let evolucaoTexto = "Estável";
+  let evolucaoColor = "text-amber-500";
 
   if (totalVendas > 0) {
-    evolucaoIcon = <ArrowUp size={26} className="text-emerald-400" />;
+    EvolucaoIcon = ArrowUp;
     evolucaoTexto = "Crescendo";
+    evolucaoColor = "text-emerald-500";
   }
 
   if (totalVendas === 0 && totalIndicacoes > 0) {
-    evolucaoIcon = <ArrowDown size={26} className="text-red-400" />;
+    EvolucaoIcon = ArrowDown;
     evolucaoTexto = "Caindo";
+    evolucaoColor = "text-red-500";
   }
 
   return (
-    <div>
-      <h1 className="text-2xl font-semibold text-white mb-2">
-        Minhas Indicações
-      </h1>
-      <p className="text-white/60 mb-10">
-        Acompanhe suas indicações, vendas e desempenho.
-      </p>
+    <div className="flex flex-col gap-8">
+      {/* HEADER */}
+      <div>
+        <h1 className="text-2xl font-bold text-[#101820] tracking-tight">Minhas Indicações</h1>
+        <p className="text-sm text-[#6B7280] mt-1">
+          Acompanhe suas indicações, vendas e desempenho.
+        </p>
+      </div>
 
-      {/* CARDS */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-        
-        <Card titulo="Total de Indicações" valor={totalIndicacoes} />
+      {/* KPIs */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <Card>
+          <CardContent className="flex items-center gap-4">
+            <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
+              <Users className="w-5 h-5" />
+            </div>
+            <div className="min-w-0">
+              <p className="text-sm text-muted-foreground truncate">Total de Indicações</p>
+              <p className="text-2xl font-bold text-[#101820] truncate">{totalIndicacoes}</p>
+            </div>
+          </CardContent>
+        </Card>
 
-        <Card titulo="Total de Vendas" valor={totalVendas} />
+        <Card>
+          <CardContent className="flex items-center gap-4">
+            <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
+              <ShoppingCart className="w-5 h-5" />
+            </div>
+            <div className="min-w-0">
+              <p className="text-sm text-muted-foreground truncate">Total de Vendas</p>
+              <p className="text-2xl font-bold text-[#101820] truncate">{totalVendas}</p>
+            </div>
+          </CardContent>
+        </Card>
 
-        <div className="rounded-2xl p-6 bg-[#2b1f1a]/60 border border-white/10 backdrop-blur-md shadow-lg flex flex-col">
-          <p className="text-white/60 text-sm">Evolução</p>
-          <div className="flex items-center gap-3 mt-2">
-            {evolucaoIcon}
-            <span className="text-xl font-semibold text-white">{evolucaoTexto}</span>
-          </div>
-        </div>
-
+        <Card>
+          <CardContent className="flex items-center gap-4">
+            <div className={cn("w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0", evolucaoColor)}>
+              <EvolucaoIcon className="w-5 h-5" />
+            </div>
+            <div className="min-w-0">
+              <p className="text-sm text-muted-foreground truncate">Evolução</p>
+              <p className="text-2xl font-bold text-[#101820] truncate">{evolucaoTexto}</p>
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
       {/* TABELA */}
-      <div
-        className="
-          mt-12 p-8 rounded-2xl shadow-lg backdrop-blur-md
-          bg-[#2b1f1a]/60 border border-white/10 text-white
-        "
-      >
-        <h3 className="text-xl font-semibold mb-4">Lista de Indicações</h3>
-
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="text-left text-white/70 border-b border-white/10">
-                <th className="pb-3">Cliente</th>
-                <th className="pb-3">Instagram</th>
-                <th className="pb-3">Valor</th>
-                <th className="pb-3">Status</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              {indicacoes.length === 0 && (
-                <tr>
-                  <td className="py-4 text-white/60" colSpan={4}>
+      <Card>
+        <CardHeader>
+          <CardTitle>Lista de Indicações</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Cliente</TableHead>
+                <TableHead>Instagram</TableHead>
+                <TableHead>Valor</TableHead>
+                <TableHead>Status</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {loading ? (
+                <TableRow>
+                  <TableCell colSpan={4} className="text-muted-foreground">
+                    Carregando indicações...
+                  </TableCell>
+                </TableRow>
+              ) : indicacoes.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={4} className="text-muted-foreground">
                     Nenhuma indicação encontrada.
-                  </td>
-                </tr>
+                  </TableCell>
+                </TableRow>
+              ) : (
+                indicacoes.map((ind) => {
+                  const venda = vendas.find((v) => v.indicacaoId === ind.id);
+
+                  return (
+                    <TableRow key={ind.id}>
+                      <TableCell>{ind.nome || "-"}</TableCell>
+                      <TableCell>@{ind.instagram || "-"}</TableCell>
+                      <TableCell>
+                        {venda ? `R$ ${venda.valor.toFixed(2)}` : "—"}
+                      </TableCell>
+                      <TableCell>
+                        {venda ? (
+                          <Badge
+                            variant="outline"
+                            className={cn(
+                              venda.status === "paga"
+                                ? "border-emerald-200 bg-emerald-50 text-emerald-700"
+                                : "border-amber-200 bg-amber-50 text-amber-700"
+                            )}
+                          >
+                            {venda.status}
+                          </Badge>
+                        ) : (
+                          <Badge variant="outline" className="border-border bg-muted text-muted-foreground">
+                            Não comprou
+                          </Badge>
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  );
+                })
               )}
-
-              {indicacoes.map((ind) => {
-                const venda = vendas.find(v => v.indicacaoId === ind.id);
-
-                return (
-                  <tr key={ind.id} className="border-b border-white/10">
-                    <td className="py-3">{ind.nome || "-"}</td>
-                    <td className="py-3">@{ind.instagram || "-"}</td>
-
-                    <td className="py-3">
-                      {venda ? `R$ ${venda.valor.toFixed(2)}` : "—"}
-                    </td>
-
-                    <td className="py-3">
-                      {venda ? (
-                        <span className={`
-                          px-3 py-1 rounded-full text-xs text-white
-                          ${venda.status === "paga" ? "bg-emerald-600" : "bg-yellow-600"}
-                        `}>
-                          {venda.status}
-                        </span>
-                      ) : (
-                        <span className="px-3 py-1 rounded-full text-xs bg-gray-600 text-white">
-                          Não comprou
-                        </span>
-                      )}
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-
-      </div>
-    </div>
-  );
-}
-
-function Card({ titulo, valor }) {
-  return (
-    <div
-      className="
-        rounded-2xl p-6 bg-[#2b1f1a]/60 border border-white/10
-        backdrop-blur-md shadow-lg
-      "
-    >
-      <p className="text-white/60 text-sm">{titulo}</p>
-      <p className="text-3xl font-bold text-white mt-1">{valor}</p>
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
     </div>
   );
 }

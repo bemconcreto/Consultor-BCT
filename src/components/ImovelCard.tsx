@@ -1,44 +1,36 @@
-import { useState } from "react";
-import ImovelDetalhesModal from "./ImovelDetalhesModal";
+"use client";
 
-export default function ImovelCard({ imovel }) {
+import { useState } from "react";
+import Image from "next/image";
+import ImovelDetalhesModal from "./ImovelDetalhesModal";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
+import type { Imovel } from "@/app/painel/imoveis/data";
+
+export default function ImovelCard({ imovel }: { imovel: Imovel }) {
   const [open, setOpen] = useState(false);
 
   return (
     <>
-      <div
-        className="bg-white rounded-xl shadow-md overflow-hidden cursor-pointer hover:shadow-lg transition"
+      <Card
+        className="overflow-hidden cursor-pointer hover:shadow-md transition-shadow p-0 gap-0"
         onClick={() => setOpen(true)}
       >
-        <img
-          src={imovel.imagem}
-          className="h-44 w-full object-cover"
-          alt={imovel.nome}
-        />
+        <div className="relative h-44 w-full bg-muted">
+          <Image src={imovel.imagemCapa} alt={imovel.nome} fill className="object-cover" />
+        </div>
 
-        <div className="p-4">
-          <h2 className="text-lg font-semibold text-gray-900">{imovel.nome}</h2>
-          <p className="text-gray-600 text-sm">{imovel.cidade}</p>
+        <CardContent className="p-4">
+          <h2 className="text-lg font-semibold text-[#101820]">{imovel.nome}</h2>
+          <p className="text-sm text-muted-foreground">{imovel.cidade}</p>
 
           <div className="mt-3">
-            <span className="px-2 py-1 text-xs rounded bg-emerald-100 text-emerald-700">
+            <Badge variant="outline" className="border-emerald-200 bg-emerald-50 text-emerald-700">
               {imovel.status}
-            </span>
+            </Badge>
           </div>
-
-          <div className="mt-4">
-            <div className="w-full bg-gray-200 rounded-full h-2.5">
-              <div
-                className="bg-emerald-600 h-2.5 rounded-full"
-                style={{ width: `${imovel.percentualDisponivel}%` }}
-              ></div>
-            </div>
-            <p className="text-xs text-gray-500 mt-1">
-              Disponível: {imovel.percentualDisponivel}%
-            </p>
-          </div>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
 
       {open && <ImovelDetalhesModal imovel={imovel} onClose={() => setOpen(false)} />}
     </>
