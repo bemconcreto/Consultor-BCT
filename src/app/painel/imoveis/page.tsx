@@ -1,21 +1,11 @@
-"use client";
-
-import { useState } from "react";
 import Link from "next/link";
 import ImovelCard from "@/components/ImovelCard";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-import { listaImoveis } from "./data";
+import { Card, CardContent } from "@/components/ui/card";
+import { getImoveis } from "@/lib/cerebro";
 
-const categorias = ["Todos", "Incorporação", "SCP", "Pronto", "Leilão"];
-
-export default function ImoveisPage() {
-  const [filtro, setFiltro] = useState("Todos");
-
-  const filtrados =
-    filtro === "Todos"
-      ? listaImoveis
-      : listaImoveis.filter((i) => i.categoria === filtro);
+export default async function ImoveisPage() {
+  const imoveis = await getImoveis();
 
   return (
     <div className="flex flex-col gap-8">
@@ -27,36 +17,25 @@ export default function ImoveisPage() {
         </p>
       </div>
 
-      {/* FILTROS */}
-      <div className="flex flex-wrap gap-2">
-        {categorias.map((cat) => (
-          <Button
-            key={cat}
-            size="sm"
-            variant={filtro === cat ? "default" : "outline"}
-            className={cn(
-              "rounded-full",
-              filtro === cat && "bg-gradient-to-r from-[#8D6E63] to-[#8D6E63]/85"
-            )}
-            onClick={() => setFiltro(cat)}
-          >
-            {cat}
-          </Button>
-        ))}
-      </div>
+      {imoveis.length === 0 ? (
+        <Card>
+          <CardContent>
+            <p className="text-sm text-muted-foreground">Nenhum imóvel disponível no momento.</p>
+          </CardContent>
+        </Card>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+          {imoveis.map((imovel) => (
+            <div key={imovel.id} className="flex flex-col gap-3">
+              <ImovelCard imovel={imovel} />
 
-      {/* GRID */}
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-        {filtrados.map((imovel) => (
-          <div key={imovel.id} className="flex flex-col gap-3">
-            <ImovelCard imovel={imovel} />
-
-            <Button asChild className="bg-gradient-to-r from-[#8D6E63] to-[#8D6E63]/85">
-              <Link href={`/painel/imoveis/${imovel.slug}`}>Mais detalhes</Link>
-            </Button>
-          </div>
-        ))}
-      </div>
+              <Button asChild className="bg-gradient-to-r from-[#8D6E63] to-[#8D6E63]/85">
+                <Link href={`/painel/imoveis/${imovel.slug}`}>Mais detalhes</Link>
+              </Button>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

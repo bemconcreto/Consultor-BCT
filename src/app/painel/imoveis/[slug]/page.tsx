@@ -1,62 +1,53 @@
-"use client";
-
 import type { ComponentType } from "react";
-import { useParams } from "next/navigation";
-import Image from "next/image";
-import { FileText, PieChart, Wallet, DollarSign, TrendingUp } from "lucide-react";
+import { Building2, FileText, PieChart, Wallet, DollarSign, TrendingUp } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { listaImoveis } from "../data";
+import {
+  getImovelBySlug,
+  DOCUMENTO_CATEGORIA_LABELS,
+  type DocumentosImovel,
+} from "@/lib/cerebro";
 
-export default function ImovelDetalhes() {
-  const params = useParams();
-  const slug = params?.slug as string;
-
-  const imovel = listaImoveis.find((i) => i.slug === slug);
+export default async function ImovelDetalhes({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  const { slug } = await params;
+  const imovel = await getImovelBySlug(slug);
 
   if (!imovel) {
     return <p className="text-sm text-muted-foreground">Imóvel não encontrado.</p>;
   }
 
-  // Pool total (soma do valor de mercado de todos os imóveis)
-  const poolTotal = listaImoveis.reduce(
-    (total, im) => total + im.valorMercadoHoje,
-    0
-  );
-
-  const percentualPool = (imovel.valorMercadoHoje / poolTotal) * 100;
-
-  const valorizacao =
-    ((imovel.valorMercadoHoje - imovel.valorPago) / imovel.valorPago) * 100;
+  const documentoCategorias = (Object.keys(DOCUMENTO_CATEGORIA_LABELS) as Array<
+    keyof DocumentosImovel
+  >).filter((categoria) => (imovel.documentos?.[categoria]?.length ?? 0) > 0);
 
   return (
     <div className="flex flex-col gap-8">
       {/* HEADER */}
       <div>
         <h1 className="text-2xl font-bold text-[#101820] tracking-tight">{imovel.nome}</h1>
-        <p className="text-sm text-[#6B7280] mt-1">{imovel.cidade}</p>
+        <p className="text-sm text-[#6B7280] mt-1">{imovel.localizacao}</p>
 
         <div className="flex gap-2 mt-3">
           <Badge variant="outline" className="border-emerald-200 bg-emerald-50 text-emerald-700">
-            {imovel.status}
+            Disponível
           </Badge>
-          <Badge variant="outline">{imovel.categoria}</Badge>
         </div>
       </div>
 
-      {/* GALERIA */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="md:col-span-2 relative h-64 md:h-80 rounded-xl overflow-hidden bg-muted">
-          <Image src={imovel.imagemCapa} alt={imovel.nome} fill className="object-cover" />
-        </div>
-
-        <div className="grid grid-cols-2 gap-4">
-          {imovel.imagens.map((img, i) => (
-            <div key={i} className="relative h-32 md:h-[9.5rem] rounded-lg overflow-hidden bg-muted">
-              <Image src={img} alt={`${imovel.nome} ${i + 1}`} fill className="object-cover" />
-            </div>
-          ))}
-        </div>
+      {/* IMAGEM DE CAPA */}
+      <div className="relative h-64 md:h-80 rounded-xl overflow-hidden bg-muted">
+        {imovel.imagemUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={imovel.imagemUrl} alt={imovel.nome} className="absolute inset-0 h-full w-full object-cover" />
+        ) : (
+          <div className="absolute inset-0 flex items-center justify-center text-muted-foreground">
+            <Building2 className="w-12 h-12" />
+          </div>
+        )}
       </div>
 
       {/* DADOS FINANCEIROS */}
@@ -64,22 +55,22 @@ export default function ImovelDetalhes() {
         <KpiCard
           icon={PieChart}
           title="Participação na Pool"
-          value={`${percentualPool.toFixed(2)}% do total`}
+          value={`${imovel.percentualPool.toFixed(2)}% do total`}
         />
         <KpiCard
           icon={Wallet}
           title="Valor Pago"
-          value={`R$ ${imovel.valorPago.toLocaleString("pt-BR")}`}
+          value={`R$ ${imovel.valorCompra.toLocaleString("pt-BR")}`}
         />
         <KpiCard
           icon={DollarSign}
           title="Valor de Mercado"
-          value={`R$ ${imovel.valorMercadoHoje.toLocaleString("pt-BR")}`}
+          value={`R$ ${imovel.valorMercado.toLocaleString("pt-BR")}`}
         />
         <KpiCard
           icon={TrendingUp}
           title="Valorização"
-          value={`${valorizacao.toFixed(1)}%`}
+          value={`${(imovel.valorizacaoAcumulada * 100).toFixed(1)}%`}
         />
       </div>
 
@@ -89,32 +80,43 @@ export default function ImovelDetalhes() {
           <CardTitle>Sobre o empreendimento</CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-sm text-[#6B7280] leading-relaxed">{imovel.descricaoLonga}</p>
+          <p className="text-sm text-[#6B7280] leading-relaxed">
+            {imovel.descricao || "Sem descrição disponível."}
+          </p>
         </CardContent>
       </Card>
 
       {/* DOCUMENTOS */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Documentos</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-wrap gap-3">
-            {imovel.documentos.map((doc, i) => (
-              <a
-                key={i}
-                href={doc.arquivo}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-border bg-muted/50 text-sm text-[#101820] hover:bg-muted transition-colors"
-              >
-                <FileText className="w-4 h-4 text-primary" />
-                {doc.nome}
-              </a>
+      {documentoCategorias.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Documentos</CardTitle>
+          </CardHeader>
+          <CardContent className="flex flex-col gap-4">
+            {documentoCategorias.map((categoria) => (
+              <div key={categoria}>
+                <h3 className="text-sm font-medium text-[#101820] mb-2">
+                  {DOCUMENTO_CATEGORIA_LABELS[categoria]}
+                </h3>
+                <div className="flex flex-wrap gap-3">
+                  {imovel.documentos?.[categoria]?.map((doc, i) => (
+                    <a
+                      key={i}
+                      href={doc.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-border bg-muted/50 text-sm text-[#101820] hover:bg-muted transition-colors"
+                    >
+                      <FileText className="w-4 h-4 text-primary" />
+                      {doc.nome}
+                    </a>
+                  ))}
+                </div>
+              </div>
             ))}
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }
