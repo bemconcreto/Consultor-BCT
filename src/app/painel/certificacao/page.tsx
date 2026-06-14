@@ -21,10 +21,10 @@ export default async function CertificacaoPage() {
       {/* HEADER */}
       <div>
         <h1 className="text-2xl font-bold text-[#101820] tracking-tight">
-          Por que se certificar Consultor BCT?
+          Por que se certificar Consultor BEM?
         </h1>
         <p className="text-sm text-[#6B7280] mt-1 max-w-3xl leading-relaxed">
-          A certificação BCT garante credibilidade, acesso a oportunidades exclusivas,
+          A certificação BEM garante credibilidade, acesso a oportunidades exclusivas,
           maior taxa de conversão em vendas e reconhecimento oficial como consultor
           autorizado. Com a certificação, você terá materiais profissionais, treinamento
           especializado e prioridade em campanhas promocionais dentro do ecossistema Bem
@@ -41,7 +41,7 @@ export default async function CertificacaoPage() {
           <CardContent>
             <p className="text-sm text-[#6B7280]">
               Você ainda não possui certificação ativa. Para liberar todos os benefícios,
-              faça agora mesmo a certificação oficial BCT.
+              faça agora mesmo a certificação oficial BEM.
             </p>
 
             <Button asChild className="mt-4 bg-gradient-to-r from-[#8D6E63] to-[#8D6E63]/85">
@@ -60,7 +60,7 @@ export default async function CertificacaoPage() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-emerald-600">
               <CheckCircle2 className="w-5 h-5" />
-              Parabéns! Você é um Consultor Certificado BCT
+              Parabéns! Você é um Consultor Certificado BEM
             </CardTitle>
           </CardHeader>
           <CardContent className="flex flex-col gap-6">
