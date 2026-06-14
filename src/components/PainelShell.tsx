@@ -1,111 +1,159 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
-import { Menu, Home, Users, Building2, GraduationCap, MessageCircle } from "lucide-react";
+import { usePathname } from "next/navigation";
+import { signOut } from "next-auth/react";
+import {
+  Menu,
+  X,
+  Home,
+  Users,
+  Building2,
+  GraduationCap,
+  MessageCircle,
+  LogOut,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
-/*
-  NOVA IDENTIDADE VISUAL DO PAINEL
-  - Fundo dark premium
-  - Gradiente bronze
-  - Sidebar elegante
-  - Topbar igual LandPage
-*/
+type Corretor = {
+  nome: string | null;
+  email: string | null;
+};
 
-export default function PainelShell({ children }: { children: React.ReactNode }) {
+const navigation = [
+  { name: "Painel", href: "/painel", icon: Home },
+  { name: "Indicações", href: "/painel/indicacoes", icon: Users },
+  { name: "Imóveis", href: "/painel/imoveis", icon: Building2 },
+  { name: "Certificação", href: "/painel/certificacao", icon: GraduationCap },
+  { name: "Suporte", href: "/painel/suporte", icon: MessageCircle },
+];
+
+export default function PainelShell({
+  children,
+  corretor,
+}: {
+  children: React.ReactNode;
+  corretor: Corretor;
+}) {
   const [open, setOpen] = useState(false);
+  const pathname = usePathname();
+
+  const nome = corretor.nome || corretor.email?.split("@")[0] || "Consultor";
+  const inicial = nome.charAt(0).toUpperCase();
+
+  const isActive = (href: string) =>
+    href === "/painel" ? pathname === href : pathname.startsWith(href);
 
   return (
-    <div className="flex min-h-screen bg-[#121212]">
-
+    <div className="flex min-h-screen bg-[#F7F8F9]">
       {/* SIDEBAR */}
       <aside
-        className={`
-          fixed md:static top-0 left-0 z-50 h-full w-72
-          bg-gradient-to-b from-[#2B2523] to-[#1C1917]
-          text-white shadow-xl border-r border-[#3D3532]
-          p-8 flex flex-col gap-10 transition-transform duration-300
-          ${open ? "translate-x-0" : "-translate-x-full md:translate-x-0"}
-        `}
+        className={cn(
+          "fixed md:static top-0 left-0 z-50 h-full w-64 bg-[#101820] text-white",
+          "flex flex-col p-4 transition-transform duration-300",
+          open ? "translate-x-0" : "-translate-x-full md:translate-x-0"
+        )}
       >
-        {/* LOGO / BRANDING */}
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Bem Concreto</h1>
-          <p className="text-sm opacity-80 mt-1">Consultor BEM</p>
-          <div className="mt-4 w-16 h-1 bg-[#C7A58B] rounded-full"></div>
+        {/* LOGO */}
+        <div className="flex items-center gap-2.5 px-2 py-3">
+          <div className="w-9 h-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center overflow-hidden shrink-0">
+            <Image src="/logo-bct.png" alt="Bem Concreto" width={28} height={28} className="object-contain" />
+          </div>
+          <div className="flex flex-col">
+            <span className="font-bold text-sm leading-tight">Bem Concreto</span>
+            <span className="text-[10px] font-semibold text-[#CBA35C] uppercase tracking-[0.15em] leading-none mt-0.5">
+              Consultor
+            </span>
+          </div>
+
+          <button
+            className="md:hidden ml-auto text-white/70 hover:text-white"
+            onClick={() => setOpen(false)}
+            aria-label="Fechar menu"
+          >
+            <X size={20} />
+          </button>
         </div>
 
         {/* MENU */}
-        <nav className="flex flex-col gap-5 text-lg font-medium">
-          <Nav href="/painel" icon={<Home size={20} />}>Painel</Nav>
-          <Nav href="/painel/indicacoes" icon={<Users size={20} />}>Indicações</Nav>
-          <Nav href="/painel/imoveis" icon={<Building2 size={20} />}>Imóveis</Nav>
-          <Nav href="/painel/certificacao" icon={<GraduationCap size={20} />}>Certificação</Nav>
-          <Nav href="/painel/suporte" icon={<MessageCircle size={20} />}>Suporte</Nav>
+        <nav className="flex flex-col gap-1 mt-6">
+          {navigation.map((item) => {
+            const Icon = item.icon;
+            const active = isActive(item.href);
+            return (
+              <Link
+                key={item.name}
+                href={item.href}
+                onClick={() => setOpen(false)}
+                className={cn(
+                  "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors",
+                  active
+                    ? "bg-primary/15 text-[#CBA35C]"
+                    : "text-white/70 hover:text-white hover:bg-white/5"
+                )}
+              >
+                <Icon size={18} />
+                {item.name}
+              </Link>
+            );
+          })}
         </nav>
 
         {/* FOOTER */}
-        <div className="mt-auto opacity-70 text-sm">
+        <div className="mt-auto px-3 py-2 text-xs text-white/40">
           Painel Consultor — {new Date().getFullYear()}
         </div>
       </aside>
 
       {/* BACKDROP (mobile) */}
       {open && (
-        <div className="fixed inset-0 bg-black/50 z-40 md:hidden" onClick={() => setOpen(false)} />
+        <div
+          className="fixed inset-0 bg-black/50 z-40 md:hidden"
+          onClick={() => setOpen(false)}
+        />
       )}
 
       {/* CONTENT AREA */}
-      <div className="flex-1 flex flex-col">
-
+      <div className="flex-1 flex flex-col min-w-0">
         {/* TOPBAR */}
-        <header
-          className="
-            h-20 px-10 flex items-center justify-between shadow-md
-            bg-gradient-to-r from-[#2B2523] to-[#1C1917]
-            border-b border-[#3D3532]
-          "
-        >
-          {/* Botão mobile */}
-          <button className="md:hidden" onClick={() => setOpen(true)}>
-            <Menu size={28} className="text-white" />
+        <header className="h-16 px-4 sm:px-8 flex items-center justify-between border-b border-[#E5E7EB] bg-white">
+          <button
+            className="md:hidden text-[#101820]"
+            onClick={() => setOpen(true)}
+            aria-label="Abrir menu"
+          >
+            <Menu size={24} />
           </button>
 
-          <h2 className="text-2xl font-semibold text-white tracking-tight">Painel</h2>
+          <div className="hidden md:block" />
 
-          {/* Perfil */}
-          <div className="flex items-center gap-4">
-            <div className="text-right leading-tight">
-              <p className="font-medium text-white">Consultor</p>
-              <p className="text-xs text-[#C7A58B]">Bem Concreto</p>
+          <div className="flex items-center gap-3">
+            <div className="text-right leading-tight hidden sm:block">
+              <p className="text-sm font-semibold text-[#101820]">{nome}</p>
+              <p className="text-xs text-[#6B7280]">Consultor</p>
             </div>
 
-            <div className="w-12 h-12 rounded-full bg-[#C7A58B] flex items-center justify-center text-black text-lg font-bold">
-              C
+            <div className="w-9 h-9 rounded-full bg-primary/10 text-primary flex items-center justify-center text-sm font-bold">
+              {inicial}
             </div>
+
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => signOut({ callbackUrl: "/" })}
+              aria-label="Sair"
+            >
+              <LogOut size={18} />
+            </Button>
           </div>
-
         </header>
 
         {/* MAIN CONTENT */}
-        <main className="p-12 text-white">{children}</main>
+        <main className="p-4 sm:p-8">{children}</main>
       </div>
     </div>
-  );
-}
-
-/* COMPONENTE NAV PREMIUM */
-function Nav({ href, children, icon }: { href: string; children: any; icon: any }) {
-  return (
-    <Link
-      href={href}
-      className="
-        flex items-center gap-3 p-3 rounded-lg
-        text-white/90 hover:bg-[#3A312E] hover:text-white transition
-      "
-    >
-      {icon}
-      {children}
-    </Link>
   );
 }

@@ -3,7 +3,10 @@ import { prisma } from "@/lib/prisma";
 import { getCurrentCorretor } from "@/lib/session";
 import { redirect } from "next/navigation";
 import React from "react";
+import { Wallet, DollarSign, Users, ShoppingCart, ArrowRight } from "lucide-react";
 import VendasRecentesWrapper from "@/components/VendasRecentesWrapper";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 function formatBRL(value: number | null | undefined) {
   const v = typeof value === "number" ? value : 0;
@@ -33,88 +36,91 @@ export default async function DashboardPage() {
   const totalRecebido = totalRecebidoAgg._sum.comissao ?? 0;
 
   return (
-    <div className="space-y-10 text-white">
+    <div className="flex flex-col gap-8">
       {/* HEADER */}
       <div>
-        <h1 className="text-3xl font-semibold">Painel</h1>
-        <p className="text-white/80 mt-1">
+        <h1 className="text-2xl font-bold text-[#101820] tracking-tight">Painel</h1>
+        <p className="text-sm text-[#6B7280] mt-1">
           Acompanhe o desempenho da sua atividade como consultor.
         </p>
       </div>
 
       {/* KPIs */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="bg-white/6 p-6 border border-white/10 rounded-2xl">
-          <p className="text-white/80 text-sm">Saldo Disponível</p>
-          <p className="text-3xl font-semibold mt-2 text-white">
-            {formatBRL(corretor.saldoDisponivel)}
-          </p>
-        </div>
-
-        <div className="bg-white/6 p-6 border border-white/10 rounded-2xl">
-          <p className="text-white/80 text-sm">Total já recebido</p>
-          <p className="text-3xl font-semibold mt-2 text-white">
-            {formatBRL(totalRecebido)}
-          </p>
-        </div>
-
-        <div className="bg-white/6 p-6 border border-white/10 rounded-2xl">
-          <p className="text-white/80 text-sm">Total de Indicações</p>
-          <p className="text-3xl font-semibold mt-2 text-white">—</p>
-        </div>
-
-        <div className="bg-white/6 p-6 border border-white/10 rounded-2xl">
-          <p className="text-white/80 text-sm">Total de Vendas</p>
-          <p className="text-3xl font-semibold mt-2 text-white">—</p>
-        </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <KpiCard icon={Wallet} title="Saldo Disponível" value={formatBRL(corretor.saldoDisponivel)} />
+        <KpiCard icon={DollarSign} title="Total já recebido" value={formatBRL(totalRecebido)} />
+        <KpiCard icon={Users} title="Total de Indicações" value="—" />
+        <KpiCard icon={ShoppingCart} title="Total de Vendas" value="—" />
       </div>
 
-      {/* VENDAS (componente cliente) */}
-      <section className="bg-white/6 border border-white/10 p-6 rounded-2xl">
-        <h2 className="text-2xl font-semibold text-white">VENDAS</h2>
-        <p className="text-white/80 mt-1 mb-4">
-          Últimas vendas e comissões.
-        </p>
+      {/* VENDAS */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Vendas Recentes</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <VendasRecentesWrapper corretorId={corretor.id} />
+        </CardContent>
+      </Card>
 
-        {/* componente cliente faz polling à API e exibe vendas */}
-        <VendasRecentesWrapper corretorId={corretor.id} />
-      </section>
-
-      {/* Próximos passos / Certificação */}
-      <section className="bg-white/6 border border-white/10 p-6 rounded-2xl">
-        <h2 className="text-2xl font-semibold text-white">Próximos Passos</h2>
-
-        {corretor.statusCertificacao === "certificado" ? (
-          <div className="mt-4 text-white/90">
-            <p className="text-xl font-semibold">Parabéns! Você é um consultor certificado.</p>
-            <p className="mt-3 text-white/80">
-              Boas práticas:
-            </p>
-            <ul className="list-disc ml-5 mt-2 text-white/80 space-y-1">
-              <li>Mantenha seus dados atualizados.</li>
-              <li>Use o painel diariamente para acompanhar resultados.</li>
-              <li>Acompanhe suas indicações e prioridades com clientes.</li>
-              <li>Responda rapidamente aos leads para aumentar conversões.</li>
-            </ul>
-          </div>
-        ) : (
-          <div className="mt-4 text-white/90">
-            <p className="text-lg font-semibold">Torne-se um Consultor Certificado</p>
-            <p className="mt-3 text-white/80">
-              A certificação garante: maior credibilidade, acesso a oportunidades
-              exclusivas, remuneração melhor e melhor ranqueamento no sistema.
-            </p>
-            <a
-              href="https://certificacao.bemconcreto.com"
-              target="_blank"
-              rel="noreferrer"
-              className="inline-block mt-4 px-5 py-3 bg-[#C7A58B] text-black rounded-lg font-semibold hover:brightness-95"
-            >
-              Ir para certificação
-            </a>
-          </div>
-        )}
-      </section>
+      {/* PRÓXIMOS PASSOS / CERTIFICAÇÃO */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Próximos Passos</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {corretor.statusCertificacao === "certificado" ? (
+            <div className="text-[#101820]">
+              <p className="text-base font-semibold">Parabéns! Você é um consultor certificado.</p>
+              <p className="mt-3 text-sm text-[#6B7280]">Boas práticas:</p>
+              <ul className="list-disc ml-5 mt-2 text-sm text-[#6B7280] space-y-1">
+                <li>Mantenha seus dados atualizados.</li>
+                <li>Use o painel diariamente para acompanhar resultados.</li>
+                <li>Acompanhe suas indicações e prioridades com clientes.</li>
+                <li>Responda rapidamente aos leads para aumentar conversões.</li>
+              </ul>
+            </div>
+          ) : (
+            <div className="text-[#101820]">
+              <p className="text-base font-semibold">Torne-se um Consultor Certificado</p>
+              <p className="mt-3 text-sm text-[#6B7280]">
+                A certificação garante: maior credibilidade, acesso a oportunidades
+                exclusivas, remuneração melhor e melhor ranqueamento no sistema.
+              </p>
+              <Button asChild className="mt-4 bg-gradient-to-r from-[#8D6E63] to-[#8D6E63]/85">
+                <a href="https://certificacao.bemconcreto.com" target="_blank" rel="noreferrer">
+                  Ir para certificação
+                  <ArrowRight className="w-4 h-4" />
+                </a>
+              </Button>
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
+  );
+}
+
+function KpiCard({
+  icon: Icon,
+  title,
+  value,
+}: {
+  icon: React.ComponentType<{ className?: string }>;
+  title: string;
+  value: string;
+}) {
+  return (
+    <Card>
+      <CardContent className="flex items-center gap-4">
+        <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
+          <Icon className="w-5 h-5" />
+        </div>
+        <div className="min-w-0">
+          <p className="text-sm text-muted-foreground truncate">{title}</p>
+          <p className="text-2xl font-bold text-[#101820] truncate">{value}</p>
+        </div>
+      </CardContent>
+    </Card>
   );
 }
