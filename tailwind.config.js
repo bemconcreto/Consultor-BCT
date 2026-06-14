@@ -8,12 +8,13 @@ module.exports = {
     extend: {
       colors: {
         bc: {
-          light: "#d9d9d6",
+          light: "#F7F8F9",
           dark: "#101820",
-          brown: "#7a5d53",
-          brown2: "#624b43",
-          brown3: "#56423b",
-          brown4: "#4c3b34",
+          brown: "#8D6E63",
+          brown2: "#74584f",
+          brown3: "#5c443d",
+          brown4: "#44312c",
+          gold: "#CBA35C",
         },
       },
       fontFamily: {
