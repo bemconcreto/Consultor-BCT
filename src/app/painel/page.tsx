@@ -63,6 +63,40 @@ export default async function DashboardPage() {
         </CardContent>
       </Card>
 
+      {/* BANNER CROSS-SELL: COMPRAR BEM */}
+      <a
+        href="https://app.bemconcreto.com"
+        target="_blank"
+        rel="noreferrer"
+        className="group relative flex items-center justify-between gap-6 rounded-2xl overflow-hidden px-7 py-6 cursor-pointer"
+        style={{ background: "linear-gradient(135deg, #1a1a2e 0%, #2d2410 60%, #1a1a2e 100%)" }}
+      >
+        <div className="pointer-events-none absolute -top-10 -left-10 w-48 h-48 rounded-full bg-[#CBA35C]/15 blur-[60px]" />
+        <div className="pointer-events-none absolute -bottom-10 -right-10 w-48 h-48 rounded-full bg-[#CBA35C]/10 blur-[60px]" />
+        <div className="pointer-events-none absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#CBA35C]/60 to-transparent" />
+
+        <div className="relative flex-1 min-w-0">
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#CBA35C]/15 border border-[#CBA35C]/25 text-[#CBA35C] text-[10px] font-bold uppercase tracking-widest mb-3">
+            <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+            Invista também
+          </span>
+          <h3 className="text-lg font-extrabold text-white leading-snug mb-1">
+            Ganhe dinheiro também <span className="text-[#CBA35C]">comprando BEM</span>
+          </h3>
+          <p className="text-white/40 text-xs leading-relaxed">
+            Invista em tokens de imóveis reais a partir de <strong className="text-white/60">R$ 100</strong> e faça seu dinheiro trabalhar por você.
+          </p>
+        </div>
+
+        <div className="relative shrink-0 flex items-center gap-3">
+          <span className="hidden sm:inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#CBA35C] to-[#E8C96A] text-[#101820] text-sm font-extrabold shadow-lg shadow-[#CBA35C]/30 group-hover:shadow-[#CBA35C]/50 group-hover:-translate-y-0.5 transition-all duration-300">
+            Quero investir
+            <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+          </span>
+          <ArrowRight className="sm:hidden w-8 h-8 text-[#CBA35C]" />
+        </div>
+      </a>
+
       {/* PRÓXIMOS PASSOS / CERTIFICAÇÃO */}
       <Card>
         <CardHeader>
