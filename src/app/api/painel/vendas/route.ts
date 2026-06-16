@@ -8,25 +8,19 @@ export async function GET(req: Request) {
     // tenta obter o corretor via sessão
     const session = await getCurrentCorretor();
 
-    let corretorId: number | null = null;
-    if (session) {
-      const corretor = await prisma.corretor.findUnique({
-        where: { userId: session.userId },
-      });
-      if (corretor) corretorId = corretor.id;
-    }
-
-    // se query param for passado, usa ele (útil para debug)
-    const url = new URL(req.url);
-    const qCorretor = url.searchParams.get("corretorId");
-    if (!corretorId && qCorretor) {
-      const parsed = parseInt(qCorretor, 10);
-      if (!Number.isNaN(parsed)) corretorId = parsed;
-    }
-
-    if (!corretorId) {
+    if (!session) {
       return NextResponse.json({ error: "Corretor não autenticado" }, { status: 401 });
     }
+
+    const corretor = await prisma.corretor.findUnique({
+      where: { userId: session.userId },
+    });
+
+    if (!corretor) {
+      return NextResponse.json({ error: "Corretor não encontrado" }, { status: 404 });
+    }
+
+    const corretorId = corretor.id;
 
     const vendas = await prisma.venda.findMany({
       where: { corretorId },

@@ -3,6 +3,13 @@ import { prisma } from "@/lib/prisma";
 
 export async function POST(req: Request) {
   try {
+    // Rota interna — exige segredo compartilhado entre APP-BCT e CONSULTOR-BCT
+    const internalSecret = process.env.INTERNAL_API_SECRET;
+    const receivedSecret = req.headers.get("x-internal-secret");
+    if (!internalSecret || receivedSecret !== internalSecret) {
+      return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
+    }
+
     const { accountId, valor, imovelId, comissao } = await req.json();
 
     if (!accountId || !valor || !comissao) {

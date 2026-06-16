@@ -22,7 +22,6 @@ export async function GET(req: Request) {
       id: true,
       corretorId: true,
       nome: true,
-      cpf: true,
     },
     take: 10,
   });

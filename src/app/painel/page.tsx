@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import React from "react";
 import { Wallet, DollarSign, Users, ShoppingCart, ArrowRight } from "lucide-react";
 import VendasRecentesWrapper from "@/components/VendasRecentesWrapper";
+import LinkDivulgacaoCard from "@/components/LinkDivulgacaoCard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
@@ -44,6 +45,9 @@ export default async function DashboardPage() {
           Acompanhe o desempenho da sua atividade como consultor.
         </p>
       </div>
+
+      {/* LINK DE DIVULGAÇÃO */}
+      <LinkDivulgacaoCard corretorId={corretor.corretorId} nome={corretor.nome} />
 
       {/* KPIs */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">

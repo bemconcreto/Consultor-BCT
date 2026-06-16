@@ -62,7 +62,7 @@ export async function POST(req: Request) {
 
     res.cookies.set("consultor_session", token, {
       httpOnly: true,
-      secure: false, // IMPORTANTE LOCALHOST
+      secure: process.env.NODE_ENV === "production",
       path: "/",
       sameSite: "lax",
       maxAge: 60 * 60 * 24 * 7,
