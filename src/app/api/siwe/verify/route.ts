@@ -41,7 +41,7 @@ export async function POST(req: Request) {
       });
 
       const nextId = (last?.id ?? 0) + 1;
-      const corretorId = `BCTCR-${String(nextId).padStart(5, "0")}`;
+      const corretorId = `BEMCR-${String(nextId).padStart(5, "0")}`;
 
       corretor = await prisma.corretor.create({
         data: { userId: user.id, corretorId },

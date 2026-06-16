@@ -51,7 +51,7 @@ callbacks: {
       await prisma.corretor.create({
         data: {
           userId: dbUser.id,
-          corretorId: `BCTCR-${String(nextId).padStart(5, "0")}`,
+          corretorId: `BEMCR-${String(nextId).padStart(5, "0")}`,
           statusCertificacao: "pendente",
         },
       });

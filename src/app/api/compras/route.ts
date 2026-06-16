@@ -40,7 +40,7 @@ const indicacao = await prisma.indicacao.findFirst({
     });
 
     const nextVendaId = (lastVenda[0]?.id ?? 0) + 1;
-    const vendaId = `BCTVND-${String(nextVendaId).padStart(6, "0")}`;
+    const vendaId = `BEMVND-${String(nextVendaId).padStart(6, "0")}`;
 
     const venda = await prisma.venda.create({
       data: {
