@@ -139,7 +139,8 @@ export default function PainelShell({
           {/* SELO CENTRAL (mobile: entre menu e avatar) */}
           {isCertificado && (
             <div className="absolute left-1/2 -translate-x-1/2 md:hidden flex items-center gap-1.5">
-              <Image
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
                 src="/selo.png"
                 alt="Consultor Certificado"
                 width={32}
@@ -165,13 +166,12 @@ export default function PainelShell({
             </div>
 
             {isCertificado ? (
-              <div className="relative w-9 h-9 shrink-0">
-                <Image
+              <div className="w-9 h-9 shrink-0 rounded-full ring-2 ring-[#CBA35C] ring-offset-1 overflow-hidden">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
                   src="/selo.png"
                   alt="Consultor Certificado"
-                  width={36}
-                  height={36}
-                  className="rounded-full object-cover ring-2 ring-[#CBA35C] ring-offset-1"
+                  className="w-full h-full object-cover"
                 />
               </div>
             ) : (
