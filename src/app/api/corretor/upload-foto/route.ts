@@ -22,7 +22,7 @@ export async function POST(req: Request) {
 
   const ext = file.name.split(".").pop()?.toLowerCase() ?? "jpg";
   const fileName = `${corretor.corretorId}-${Date.now()}.${ext}`;
-  const buffer = Buffer.from(await file.arrayBuffer());
+  const arrayBuffer = await file.arrayBuffer();
 
   const supabaseUrl = process.env.SUPABASE_URL!;
   const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
@@ -34,7 +34,7 @@ export async function POST(req: Request) {
       "Content-Type": file.type,
       "x-upsert": "true",
     },
-    body: buffer,
+    body: arrayBuffer,
   });
 
   if (!uploadRes.ok) {
