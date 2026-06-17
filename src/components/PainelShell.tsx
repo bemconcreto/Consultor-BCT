@@ -23,6 +23,7 @@ import { cn } from "@/lib/utils";
 type Corretor = {
   nome: string | null;
   email: string | null;
+  statusCertificacao?: string | null;
 };
 
 const navigation = [
@@ -47,6 +48,7 @@ export default function PainelShell({
 
   const nome = corretor.nome || corretor.email?.split("@")[0] || "Consultor";
   const inicial = nome.charAt(0).toUpperCase();
+  const isCertificado = corretor.statusCertificacao === "certificado";
 
   const isActive = (href: string) =>
     href === "/painel" ? pathname === href : pathname.startsWith(href);
@@ -123,7 +125,7 @@ export default function PainelShell({
       {/* CONTENT AREA */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* TOPBAR */}
-        <header className="h-16 px-4 sm:px-8 flex items-center justify-between border-b border-[#E5E7EB] bg-white">
+        <header className="relative h-16 px-4 sm:px-8 flex items-center justify-between border-b border-[#E5E7EB] bg-white">
           <button
             className="md:hidden text-[#101820]"
             onClick={() => setOpen(true)}
@@ -134,15 +136,49 @@ export default function PainelShell({
 
           <div className="hidden md:block" />
 
+          {/* SELO CENTRAL (mobile: entre menu e avatar) */}
+          {isCertificado && (
+            <div className="absolute left-1/2 -translate-x-1/2 md:hidden flex items-center gap-1.5">
+              <Image
+                src="/selo.png"
+                alt="Consultor Certificado"
+                width={32}
+                height={32}
+                className="rounded-full object-cover"
+              />
+              <span className="text-[11px] font-bold text-[#CBA35C] tracking-wide leading-none">
+                Certificado
+              </span>
+            </div>
+          )}
+
           <div className="flex items-center gap-3">
             <div className="text-right leading-tight hidden sm:block">
               <p className="text-sm font-semibold text-[#101820]">{nome}</p>
-              <p className="text-xs text-[#6B7280]">Consultor</p>
+              <p className="text-xs text-[#6B7280]">
+                {isCertificado ? (
+                  <span className="text-[#CBA35C] font-semibold">✓ Certificado</span>
+                ) : (
+                  "Consultor"
+                )}
+              </p>
             </div>
 
-            <div className="w-9 h-9 rounded-full bg-primary/10 text-primary flex items-center justify-center text-sm font-bold">
-              {inicial}
-            </div>
+            {isCertificado ? (
+              <div className="relative w-9 h-9 shrink-0">
+                <Image
+                  src="/selo.png"
+                  alt="Consultor Certificado"
+                  width={36}
+                  height={36}
+                  className="rounded-full object-cover ring-2 ring-[#CBA35C] ring-offset-1"
+                />
+              </div>
+            ) : (
+              <div className="w-9 h-9 rounded-full bg-primary/10 text-primary flex items-center justify-center text-sm font-bold">
+                {inicial}
+              </div>
+            )}
 
             <Button
               variant="ghost"

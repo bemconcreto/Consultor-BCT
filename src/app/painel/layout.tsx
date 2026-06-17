@@ -9,13 +9,13 @@ export default async function PainelLayout({ children }: { children: React.React
 
   const corretor = await prisma.corretor.findUnique({
     where: { userId: session.userId },
-    select: { nome: true },
+    select: { nome: true, statusCertificacao: true },
   });
 
   if (!corretor) redirect("/");
 
   return (
-    <PainelShell corretor={{ nome: corretor.nome, email: session.email ?? null }}>
+    <PainelShell corretor={{ nome: corretor.nome, email: session.email ?? null, statusCertificacao: corretor.statusCertificacao }}>
       {children}
     </PainelShell>
   );
