@@ -14,7 +14,7 @@ export default async function CertificacaoPage() {
     where: { userId: session.userId },
   });
 
-  const certificado = corretor?.statusCertificacao === "aprovado";
+  const certificado = corretor?.statusCertificacao === "certificado";
 
   return (
     <div className="flex flex-col gap-8">
