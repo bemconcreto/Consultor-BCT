@@ -15,6 +15,7 @@ import {
   MessageCircle,
   LogOut,
   Wallet,
+  UserCircle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -30,6 +31,7 @@ const navigation = [
   { name: "Indicações", href: "/painel/indicacoes", icon: Users },
   { name: "Imóveis", href: "/painel/imoveis", icon: Building2 },
   { name: "Certificação", href: "/painel/certificacao", icon: GraduationCap },
+  { name: "Perfil", href: "/painel/perfil", icon: UserCircle },
   { name: "Suporte", href: "/painel/suporte", icon: MessageCircle },
 ];
 
