@@ -3,7 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { getCurrentCorretor } from "@/lib/session";
 import { redirect } from "next/navigation";
 import React from "react";
-import { Wallet, DollarSign, Users, ShoppingCart, ArrowRight, ArrowDownToLine, BadgeCheck } from "lucide-react";
+import { Wallet, DollarSign, Users, ShoppingCart, ArrowRight, ArrowDownToLine } from "lucide-react";
 import VendasRecentesWrapper from "@/components/VendasRecentesWrapper";
 import LinkDivulgacaoCard from "@/components/LinkDivulgacaoCard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -36,8 +36,6 @@ export default async function DashboardPage() {
   });
   const totalRecebido = totalRecebidoAgg._sum.comissao ?? 0;
 
-  const isCertificado = corretor.statusCertificacao === "certificado";
-
   return (
     <div className="flex flex-col gap-8">
       {/* HEADER */}
@@ -47,41 +45,6 @@ export default async function DashboardPage() {
           Acompanhe o desempenho da sua atividade como consultor.
         </p>
       </div>
-
-      {/* SELO DE CONSULTOR CERTIFICADO */}
-      {isCertificado && (
-        <div className="relative flex flex-col items-center justify-center gap-3 rounded-2xl overflow-hidden px-8 py-7 text-center"
-          style={{ background: "linear-gradient(135deg, #1a1108 0%, #2d1f04 50%, #1a1108 100%)" }}>
-          {/* Glow decorativo */}
-          <div className="pointer-events-none absolute -top-10 left-1/2 -translate-x-1/2 w-72 h-36 rounded-full bg-[#CBA35C]/20 blur-[60px]" />
-          <div className="pointer-events-none absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#CBA35C]/70 to-transparent" />
-          <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#CBA35C]/30 to-transparent" />
-
-          {/* Ícone */}
-          <div className="relative w-16 h-16 rounded-full bg-gradient-to-br from-[#CBA35C] to-[#E8C96A] flex items-center justify-center shadow-lg shadow-[#CBA35C]/40">
-            <BadgeCheck className="w-9 h-9 text-[#1a1108]" strokeWidth={2} />
-          </div>
-
-          {/* Texto */}
-          <div className="relative">
-            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#CBA35C]/70 mb-1">
-              Bem Concreto Token
-            </p>
-            <h2 className="text-xl font-extrabold text-white tracking-tight">
-              Consultor Certificado
-            </h2>
-            <p className="text-sm text-white/50 mt-1">
-              Comissão ativa: <span className="text-[#CBA35C] font-bold">4%</span> em todas as suas indicações
-            </p>
-          </div>
-
-          {/* Badge */}
-          <div className="relative inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#CBA35C]/15 border border-[#CBA35C]/30 text-[#CBA35C] text-xs font-semibold mt-1">
-            <BadgeCheck className="w-3.5 h-3.5" />
-            Certificação ativa e válida
-          </div>
-        </div>
-      )}
 
       {/* LINK DE DIVULGAÇÃO */}
       <LinkDivulgacaoCard corretorId={corretor.corretorId} nome={corretor.nome} />
