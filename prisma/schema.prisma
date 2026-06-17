@@ -30,6 +30,7 @@ model Corretor {
   dadosBancarios   Json?
   instagramHandle  String?      @unique
   chavePix         String?
+  fotoUrl          String?
 
   saldoDisponivel  Float        @default(0)
   saldoPendente    Float        @default(0)

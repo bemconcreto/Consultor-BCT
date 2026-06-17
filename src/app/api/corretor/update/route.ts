@@ -14,7 +14,7 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json();
-    let { nome, cpf, creci, instagramHandle, chavePix } = body;
+    let { nome, cpf, creci, instagramHandle, chavePix, fotoUrl } = body;
 
     // Normaliza Instagram
     if (instagramHandle) {
@@ -32,6 +32,7 @@ export async function POST(req: Request) {
         creci: creci ?? undefined,
         instagramHandle: instagramHandle ?? undefined,
         chavePix: chavePix ?? undefined,
+        fotoUrl: fotoUrl ?? undefined,
       },
     });
 
