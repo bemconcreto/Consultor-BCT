@@ -44,8 +44,8 @@ const indicacao = await prisma.indicacao.findFirst({
     const corretor = indicacao.corretor;
 
     // 2️⃣ Calcular comissão automaticamente
-    const possuiCreci = !!corretor.creci;
-    const porcentagem = possuiCreci ? 0.04 : 0.02;
+    const certificado = corretor.statusCertificacao === "certificado";
+    const porcentagem = certificado ? 0.04 : 0.02;
     const comissao = Number(valor) * porcentagem;
 
     // 3️⃣ Criar ID único da venda

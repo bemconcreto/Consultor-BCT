@@ -29,6 +29,7 @@ model Corretor {
   creci            String?
   dadosBancarios   Json?
   instagramHandle  String?      @unique
+  chavePix         String?
 
   saldoDisponivel  Float        @default(0)
   saldoPendente    Float        @default(0)
