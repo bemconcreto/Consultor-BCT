@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import Link from "next/link";
 import ImovelCard from "@/components/ImovelCard";
 import { Button } from "@/components/ui/button";

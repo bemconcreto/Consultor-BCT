@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import type { ComponentType } from "react";
 import { Building2, FileText, PieChart, Wallet, DollarSign, TrendingUp } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
