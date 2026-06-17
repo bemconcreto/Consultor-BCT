@@ -3,7 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { getCurrentCorretor } from "@/lib/session";
 import { redirect } from "next/navigation";
 import React from "react";
-import { Wallet, DollarSign, Users, ShoppingCart, ArrowRight } from "lucide-react";
+import { Wallet, DollarSign, Users, ShoppingCart, ArrowRight, ArrowDownToLine } from "lucide-react";
 import VendasRecentesWrapper from "@/components/VendasRecentesWrapper";
 import LinkDivulgacaoCard from "@/components/LinkDivulgacaoCard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -51,7 +51,26 @@ export default async function DashboardPage() {
 
       {/* KPIs */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <KpiCard icon={Wallet} title="Saldo Disponível" value={formatBRL(corretor.saldoDisponivel)} />
+        {/* Saldo com botão de saque */}
+        <Card>
+          <CardContent className="flex items-center gap-4 pt-6">
+            <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
+              <Wallet className="w-5 h-5" />
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="text-sm text-muted-foreground truncate">Saldo Disponível</p>
+              <p className="text-2xl font-bold text-[#101820] truncate">{formatBRL(corretor.saldoDisponivel)}</p>
+              {corretor.saldoDisponivel > 0 && (
+                <a
+                  href="/painel/financeiro"
+                  className="inline-flex items-center gap-1 mt-1 text-[11px] font-bold text-[#CBA35C] hover:underline"
+                >
+                  <ArrowDownToLine className="w-3 h-3" /> Solicitar saque
+                </a>
+              )}
+            </div>
+          </CardContent>
+        </Card>
         <KpiCard icon={DollarSign} title="Total já recebido" value={formatBRL(totalRecebido)} />
         <KpiCard icon={Users} title="Total de Indicações" value="—" />
         <KpiCard icon={ShoppingCart} title="Total de Vendas" value="—" />

@@ -14,6 +14,7 @@ import {
   GraduationCap,
   MessageCircle,
   LogOut,
+  Wallet,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -25,6 +26,7 @@ type Corretor = {
 
 const navigation = [
   { name: "Painel", href: "/painel", icon: Home },
+  { name: "Financeiro", href: "/painel/financeiro", icon: Wallet },
   { name: "Indicações", href: "/painel/indicacoes", icon: Users },
   { name: "Imóveis", href: "/painel/imoveis", icon: Building2 },
   { name: "Certificação", href: "/painel/certificacao", icon: GraduationCap },
