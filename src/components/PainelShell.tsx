@@ -24,6 +24,7 @@ type Corretor = {
   nome: string | null;
   email: string | null;
   statusCertificacao?: string | null;
+  fotoUrl?: string | null;
 };
 
 const navigation = [
@@ -165,17 +166,13 @@ export default function PainelShell({
               </p>
             </div>
 
-            {isCertificado ? (
-              <div className="w-9 h-9 shrink-0 rounded-full ring-2 ring-[#CBA35C] ring-offset-1 overflow-hidden">
+            {corretor.fotoUrl ? (
+              <div className={`w-9 h-9 shrink-0 rounded-full overflow-hidden ${isCertificado ? "ring-2 ring-[#CBA35C] ring-offset-1" : ""}`}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src="/selo.png"
-                  alt="Consultor Certificado"
-                  className="w-full h-full object-cover"
-                />
+                <img src={corretor.fotoUrl} alt={nome} className="w-full h-full object-cover" />
               </div>
             ) : (
-              <div className="w-9 h-9 rounded-full bg-primary/10 text-primary flex items-center justify-center text-sm font-bold">
+              <div className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold ${isCertificado ? "bg-[#CBA35C]/20 text-[#CBA35C] ring-2 ring-[#CBA35C] ring-offset-1" : "bg-primary/10 text-primary"}`}>
                 {inicial}
               </div>
             )}
