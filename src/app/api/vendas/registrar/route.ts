@@ -11,12 +11,17 @@ import { prisma } from "@/lib/prisma";
  * 
  * A rota:
  *  1. identifica qual corretor indicou o cliente
- *  2. calcula automaticamente a comissão (4% com CRECI, 2% sem CRECI)
+ *  2. calcula automaticamente a comissão (4% para consultor certificado, 2% para não certificado)
  *  3. cria a venda no banco
  *  4. adiciona a comissão ao saldo Disponível do corretor
  */
 
 export async function POST(req: Request) {
+  const secret = req.headers.get("x-internal-secret");
+  if (!secret || secret !== process.env.INTERNAL_API_SECRET) {
+    return NextResponse.json({ ok: false, error: "Não autorizado" }, { status: 403 });
+  }
+
   try {
     const body = await req.json();
     const { accountId, valor, imovelId } = body;
@@ -51,26 +56,26 @@ const indicacao = await prisma.indicacao.findFirst({
     // 3️⃣ Criar ID único da venda
     const vendaId = `VENDA-${Date.now()}-${Math.floor(Math.random() * 9999)}`;
 
-    // 4️⃣ Registrar venda
-    const venda = await prisma.venda.create({
-      data: {
-        vendaId,
-        corretorId: corretor.id,
-        valor: Number(valor),
-        comissao,
-        imovelId: imovelId ?? null,
-        status: "confirmada",
-        dataVenda: new Date(),
-      },
-    });
-
-    // 5️⃣ Atualizar saldo disponível do corretor
-    await prisma.corretor.update({
-      where: { id: corretor.id },
-      data: {
-        saldoDisponivel: corretor.saldoDisponivel + comissao,
-      },
-    });
+    // 4️⃣ Registrar venda e atualizar saldo disponível do corretor atomicamente
+    const [venda] = await prisma.$transaction([
+      prisma.venda.create({
+        data: {
+          vendaId,
+          corretorId: corretor.id,
+          valor: Number(valor),
+          comissao,
+          imovelId: imovelId ?? null,
+          status: "confirmada",
+          dataVenda: new Date(),
+        },
+      }),
+      prisma.corretor.update({
+        where: { id: corretor.id },
+        data: {
+          saldoDisponivel: { increment: comissao },
+        },
+      }),
+    ]);
 
     return NextResponse.json({ ok: true, venda });
   } catch (error) {

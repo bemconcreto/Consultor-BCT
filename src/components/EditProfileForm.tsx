@@ -14,6 +14,7 @@ export default function EditProfileForm({ initialCorretor }: { initialCorretor: 
   const [saved, setSaved] = useState(false);
   const [uploadingFoto, setUploadingFoto] = useState(false);
   const [fotoError, setFotoError] = useState("");
+  const [saveError, setSaveError] = useState("");
   const fotoInputRef = useRef<HTMLInputElement>(null);
 
   function normalizeInstagram(value: string) {
@@ -49,21 +50,32 @@ export default function EditProfileForm({ initialCorretor }: { initialCorretor: 
   async function handleSave() {
     setSaving(true);
     setSaved(false);
-    await fetch("/api/corretor/update", {
-      method: "POST",
-      body: JSON.stringify({
-        nome,
-        cpf,
-        creci,
-        instagramHandle: normalizeInstagram(instagramHandle),
-        chavePix: chavePix.trim(),
-        fotoUrl: fotoUrl || undefined,
-      }),
-      headers: { "Content-Type": "application/json" },
-    });
-    setSaving(false);
-    setSaved(true);
-    setTimeout(() => setSaved(false), 3000);
+    setSaveError("");
+    try {
+      const res = await fetch("/api/corretor/update", {
+        method: "POST",
+        body: JSON.stringify({
+          nome,
+          cpf,
+          creci,
+          instagramHandle: normalizeInstagram(instagramHandle),
+          chavePix: chavePix.trim(),
+          fotoUrl: fotoUrl || undefined,
+        }),
+        headers: { "Content-Type": "application/json" },
+      });
+      const json = await res.json().catch(() => null);
+      if (res.ok && json?.ok) {
+        setSaved(true);
+        setTimeout(() => setSaved(false), 3000);
+      } else {
+        setSaveError(json?.error ?? "Erro ao salvar os dados. Tente novamente.");
+      }
+    } catch {
+      setSaveError("Erro de conexão ao salvar os dados.");
+    } finally {
+      setSaving(false);
+    }
   }
 
   const inputClass =
@@ -161,13 +173,16 @@ export default function EditProfileForm({ initialCorretor }: { initialCorretor: 
         </p>
       </div>
 
-      <button
-        onClick={handleSave}
-        disabled={saving}
-        className="self-start flex items-center gap-2 px-6 py-2.5 rounded-xl bg-gradient-to-r from-[#CBA35C] to-[#E8C96A] text-[#101820] text-sm font-bold shadow-md shadow-[#CBA35C]/20 hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
-      >
-        {saving ? "Salvando..." : saved ? "✓ Salvo!" : "Salvar dados"}
-      </button>
+      <div className="flex flex-col items-start gap-2">
+        <button
+          onClick={handleSave}
+          disabled={saving}
+          className="self-start flex items-center gap-2 px-6 py-2.5 rounded-xl bg-gradient-to-r from-[#CBA35C] to-[#E8C96A] text-[#101820] text-sm font-bold shadow-md shadow-[#CBA35C]/20 hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+        >
+          {saving ? "Salvando..." : saved ? "✓ Salvo!" : "Salvar dados"}
+        </button>
+        {saveError && <p className="text-xs text-red-600">{saveError}</p>}
+      </div>
     </div>
   );
 }

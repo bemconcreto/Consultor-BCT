@@ -13,7 +13,7 @@ const faq = [
   },
   {
     q: "A certificação é obrigatória?",
-    a: "Sim. Apenas consultores certificados podem indicar clientes e receber comissões pelos projetos tokenizados."
+    a: "Não é obrigatória para receber comissões, mas consultores certificados recebem 4% por venda, enquanto não certificados recebem 2%."
   },
   {
     q: "Como recebo minhas comissões?",
@@ -73,7 +73,7 @@ const faq = [
   },
   {
     q: "Como altero meus dados pessoais?",
-    a: "Em breve o painel terá essa funcionalidade. Por enquanto, solicite via suporte."
+    a: "Acesse a aba Perfil no menu lateral. Lá você pode atualizar seus dados e foto profissional."
   },
   {
     q: "Como sei se já estou certificado?",
@@ -140,7 +140,7 @@ export default function SuportePage() {
             size="lg"
             className="bg-green-600 hover:bg-green-500 text-white"
           >
-            <a href="https://wa.me/5511975967575" target="_blank" rel="noreferrer">
+            <a href="https://wa.me/5511965862850" target="_blank" rel="noreferrer">
               <MessageCircle className="w-5 h-5" />
               Falar com o suporte
             </a>

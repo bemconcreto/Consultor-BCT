@@ -10,9 +10,9 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
     }
 
-    const { accountId, valor, imovelId, comissao } = await req.json();
+    const { accountId, valor, imovelId } = await req.json();
 
-    if (!accountId || !valor || !comissao) {
+    if (!accountId || !valor) {
       return NextResponse.json(
         { error: "Campos obrigatórios faltando" },
         { status: 400 }
@@ -20,9 +20,10 @@ export async function POST(req: Request) {
     }
 
     // 1 — Verificar quem indicou esse cliente
-const indicacao = await prisma.indicacao.findFirst({
-  where: { accountId },
-});
+    const indicacao = await prisma.indicacao.findFirst({
+      where: { accountId },
+      include: { corretor: true },
+    });
 
     if (!indicacao) {
       return NextResponse.json(
@@ -33,35 +34,33 @@ const indicacao = await prisma.indicacao.findFirst({
 
     const consultorId = indicacao.consultorId;
 
-    // 2 — Registrar nova venda
-    const lastVenda = await prisma.venda.findMany({
-      orderBy: { id: "desc" },
-      take: 1,
-    });
+    // 2 — Comissão SEMPRE recalculada no servidor (nunca confiar em valor vindo do body)
+    const certificado = indicacao.corretor.statusCertificacao === "certificado";
+    const porcentagem = certificado ? 0.04 : 0.02;
+    const comissaoCalculada = Number(valor) * porcentagem;
 
-    const nextVendaId = (lastVenda[0]?.id ?? 0) + 1;
-    const vendaId = `BEMVND-${String(nextVendaId).padStart(6, "0")}`;
+    // 3 — Registrar nova venda com id não sequencial (evita colisão sob concorrência)
+    const vendaId = `BEMVND-${Date.now()}${Math.floor(Math.random() * 1000)}`;
 
-    const venda = await prisma.venda.create({
-      data: {
-        vendaId,
-        corretorId: consultorId,
-        imovelId: imovelId ?? null,
-        valor: Number(valor),
-        comissao: Number(comissao),
-        status: "pendente",
-      },
-    });
-
-    // 3 — Atualizar saldo pendente ou disponível
-    await prisma.corretor.update({
-      where: { id: consultorId },
-      data: {
-        saldoPendente: {
-          increment: Number(comissao),
+    // 4 — Criar venda e atualizar saldo pendente do corretor atomicamente
+    const [venda] = await prisma.$transaction([
+      prisma.venda.create({
+        data: {
+          vendaId,
+          corretorId: consultorId,
+          imovelId: imovelId ?? null,
+          valor: Number(valor),
+          comissao: comissaoCalculada,
+          status: "pendente",
         },
-      },
-    });
+      }),
+      prisma.corretor.update({
+        where: { id: consultorId },
+        data: {
+          saldoPendente: { increment: comissaoCalculada },
+        },
+      }),
+    ]);
 
     return NextResponse.json({
       ok: true,

@@ -24,16 +24,14 @@ export default async function DashboardPage() {
 
   if (!corretor) redirect("/");
 
-  // total já recebido = soma de comissao onde status = 'pago' para esse corretor
-  const totalRecebidoAgg = await prisma.venda.aggregate({
-    where: {
-      corretorId: corretor.id,
-      status: "pago",
-    },
-    _sum: {
-      comissao: true,
-    },
-  });
+  const [totalRecebidoAgg, totalVendas, totalIndicacoes] = await Promise.all([
+    prisma.venda.aggregate({
+      where: { corretorId: corretor.id, status: "confirmada" },
+      _sum: { comissao: true },
+    }),
+    prisma.venda.count({ where: { corretorId: corretor.id } }),
+    prisma.indicacao.count({ where: { consultorId: corretor.id } }),
+  ]);
   const totalRecebido = totalRecebidoAgg._sum.comissao ?? 0;
 
   return (
@@ -72,8 +70,8 @@ export default async function DashboardPage() {
           </CardContent>
         </Card>
         <KpiCard icon={DollarSign} title="Total já recebido" value={formatBRL(totalRecebido)} />
-        <KpiCard icon={Users} title="Total de Indicações" value="—" />
-        <KpiCard icon={ShoppingCart} title="Total de Vendas" value="—" />
+        <KpiCard icon={Users} title="Total de Indicações" value={String(totalIndicacoes)} />
+        <KpiCard icon={ShoppingCart} title="Total de Vendas" value={String(totalVendas)} />
       </div>
 
       {/* VENDAS */}

@@ -11,6 +11,7 @@ import {
   TableCell,
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
+import { formatBRL } from "@/lib/format";
 
 function formatDate(dateString: any) {
   if (!dateString) return "-";
@@ -70,13 +71,13 @@ export default function VendasRecentes({ corretorId }: { corretorId: number }) {
         {vendas.map((venda) => (
           <TableRow key={venda.id}>
             <TableCell>{formatDate(venda.dataVenda)}</TableCell>
-            <TableCell className="font-medium">R$ {venda.valor.toFixed(2)}</TableCell>
-            <TableCell className="font-medium">R$ {venda.comissao.toFixed(2)}</TableCell>
+            <TableCell className="font-medium">{formatBRL(venda.valor)}</TableCell>
+            <TableCell className="font-medium">{formatBRL(venda.comissao)}</TableCell>
             <TableCell>
               <Badge
                 variant="outline"
                 className={cn(
-                  venda.status === "paga"
+                  venda.status === "confirmada"
                     ? "border-emerald-200 bg-emerald-50 text-emerald-700"
                     : "border-amber-200 bg-amber-50 text-amber-700"
                 )}

@@ -42,16 +42,14 @@ callbacks: {
     });
 
     if (!corretor) {
-      const last = await prisma.corretor.findFirst({
-        orderBy: { id: "desc" },
-      });
-
-      const nextId = (last?.id ?? 0) + 1;
+      // Timestamp + random evita colisão de corretorId sob concorrência
+      // (ler "max + 1" fora de transação permitia duas requisições simultâneas gerarem o mesmo id)
+      const corretorId = `BEMCR-${Date.now()}${Math.floor(Math.random() * 1000)}`;
 
       await prisma.corretor.create({
         data: {
           userId: dbUser.id,
-          corretorId: `BEMCR-${String(nextId).padStart(5, "0")}`,
+          corretorId,
           statusCertificacao: "pendente",
         },
       });
